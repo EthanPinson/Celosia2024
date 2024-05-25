@@ -4,6 +4,7 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
+import math
 import wpilib
 import wpimath.controller
 import commands2
@@ -14,6 +15,10 @@ import constants
 import subsystems.drivesubsystem
 import commands.turntoangle
 import commands.turntoangleprofiled
+from pathplannerlib.auto import AutoBuilder
+from pathplannerlib.config import *
+from pathplannerlib.auto import PathPlannerAuto
+
 
 class RobotContainer:
     """
@@ -23,6 +28,9 @@ class RobotContainer:
     subsystems, commands, and button mappings) should be declared here.
 
     """
+
+    # PathPlanner docs:
+    #https://github.com/mjansen4857/pathplanner/wiki/Python-Example:-Build-an-Auto
 
     def __init__(self):
         """The container for the robot. Contains subsystems, OI devices, and commands."""
@@ -94,9 +102,10 @@ class RobotContainer:
         )
 
         # Turn to 90 degrees when the 'X' button is pressed, with a 5 second timeout
+
         commands2.button.JoystickButton(
             self.driverController, wpilib.XboxController.Button.kA
-        ).onTrue(commands.turntoangle.TurnToAngle(90, self.robotDrive).withTimeout(5))
+        ).onTrue(commands.turntoangle.TurnToAngle(math.pi/2, self.robotDrive).withTimeout(5))
 
         # Turn to -90 degrees with a profile when the Circle button is pressed, with a 5 second timeout
         commands2.button.JoystickButton(
@@ -113,4 +122,11 @@ class RobotContainer:
 
         :returns: the command to run in autonomous
         """
-        return commands2.InstantCommand()
+        #return commands2.InstantCommand()
+        return PathPlannerAuto('Example Auto')
+
+
+
+
+
+

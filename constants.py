@@ -24,15 +24,25 @@ class DriveConstants:
     kStabilizationI = 0.5
     kStabilizationD = 0
 
-    kTurnP = .01
+    #kTurnP = .01
+    kTurnP = 0.5
+    #kTurnP = .004
     kTurnI = 0
-    kTurnD = 0
+    kTurnD = 0.375
 
     kMaxTurnRateDegPerS = 100
     kMaxTurnAccelerationDegPerSSquared = 300
 
     kTurnToleranceDeg = 5
     kTurnRateToleranceDegPerS = 10  # degrees per second
+
+    # Radian conversions of the above
+    kMaxTurnRateRadPerS = kMaxTurnRateDegPerS * math.pi / 180.0
+    kMaxTurnAccelerationRadPerSSquared = kMaxTurnAccelerationDegPerSSquared * math.pi / 180.0
+
+    kTurnToleranceRad = kTurnToleranceDeg * math.pi / 180.0
+    kTurnRateToleranceRadPerS = kTurnRateToleranceDegPerS * math.pi / 180.0
+
 
 class AutoConstants:
 
@@ -43,6 +53,7 @@ class AutoConstants:
     # Encoder counts per revolution/rotation.
     kEncoderCPR = 360
     kWheelDiameterMeters = 0.152
+    kEncoderDistancePerTick = math.pi * kWheelDiameterMeters / kEncoderCPR
 
     # NOTE: Please do NOT use these values on your robot. Rather, characterize your
     # drivetrain using the FRC Characterization tool. These are for demo purposes

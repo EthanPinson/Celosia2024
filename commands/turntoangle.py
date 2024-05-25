@@ -4,6 +4,7 @@
 # the WPILib BSD license file in the root directory of this project.
 #
 
+import math
 import wpilib
 import commands2
 import commands2.cmd
@@ -14,10 +15,12 @@ from subsystems.drivesubsystem import DriveSubsystem
 import constants
 
 
-class TurnToAngle(commands2.PIDCommand):
-    """A command that will turn the robot to the specified angle."""
 
-    def __init__(self, targetAngleDegrees: float, drive: DriveSubsystem) -> None:
+class TurnToAngle(commands2.PIDCommand):
+    """BROKEN - DO NOT USE.   Was coded for radians but htat isnt' implemented yet.
+    A command that will turn the robot to the specified angle."""
+
+    def __init__(self, targetAngleRadians: float, drive: DriveSubsystem) -> None:
         """
         Turns to robot to the specified angle.
 
@@ -33,7 +36,7 @@ class TurnToAngle(commands2.PIDCommand):
             # Close loop on heading
             drive.getHeading,
             # Set reference to target
-            targetAngleDegrees,
+            targetAngleRadians,
             # Pipe output to turn robot
             lambda output: drive.arcadeDrive(0, output),
             # Require the drive
@@ -41,13 +44,13 @@ class TurnToAngle(commands2.PIDCommand):
         )
 
         # Set the controller to be continuous (because it is an angle controller)
-        self.getController().enableContinuousInput(-180, 180)
+        self.getController().enableContinuousInput(-math.pi, math.pi)
 
         # Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
         # setpoint before it is considered as having reached the reference
         self.getController().setTolerance(
-            constants.DriveConstants.kTurnToleranceDeg,
-            constants.DriveConstants.kTurnRateToleranceDegPerS,
+            constants.DriveConstants.kTurnToleranceRad,
+            constants.DriveConstants.kTurnRateToleranceRadPerS,
         )
 
     def isFinished(self) -> bool:
