@@ -1,0 +1,36 @@
+{
+  "Clients": {
+    "open": true
+  },
+  "Connections": {
+    "open": true
+  },
+  "NetworkTables Settings": {
+    "clientName": "1912-cr-beta",
+    "mode": "Client (NT4)",
+    "serverTeam": "9982"
+  },
+  "Persistent Values": {
+    "open": false
+  },
+  "photonvision@3": {
+    "open": true
+  },
+  "transitory": {
+    "Shuffleboard": {
+      "open": true
+    },
+    "photonvision": {
+      "blueCamera": {
+        "double[]##v_/photonvision/blueCamera/targetPose": {
+          "open": true
+        },
+        "open": true
+      },
+      "greenCamera": {
+        "open": true
+      },
+      "open": true
+    }
+  }
+}

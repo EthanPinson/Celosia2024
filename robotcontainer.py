@@ -13,8 +13,10 @@ import commands2.button
 
 import constants
 import subsystems.drivesubsystem
+from subsystems.opticalsubsystem import OpticalSubsystem
 import commands.turntoangle
 import commands.turntoangleprofiled
+from commands.optics import Optics
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.config import *
 from pathplannerlib.auto import PathPlannerAuto
@@ -101,7 +103,7 @@ class RobotContainer:
             )
         )
 
-        # Turn to 90 degrees when the 'X' button is pressed, with a 5 second timeout
+        # Turn to 90 degrees__init__when the 'X' button is pressed, with a 5 second timeout
 
         commands2.button.JoystickButton(
             self.driverController, wpilib.XboxController.Button.kA
@@ -123,7 +125,8 @@ class RobotContainer:
         :returns: the command to run in autonomous
         """
         #return commands2.InstantCommand()
-        return PathPlannerAuto('Example Auto')
+        # return PathPlannerAuto('Example Auto')
+        return Optics(OpticalSubsystem)
 
 
 

@@ -10,6 +10,7 @@ import wpilib
 import commands2
 import commands2.cmd
 import robotcontainer
+import photonlibpy
 
 """
 The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -53,6 +54,7 @@ class MyRobot(commands2.TimedCommandRobot):
             print("no auto command?")
 
     def autonomousPeriodic(self) -> None:
+        self.autonomousCommand.checkTarget()
         """This function is called periodically during autonomous"""
 
     def teleopInit(self) -> None:

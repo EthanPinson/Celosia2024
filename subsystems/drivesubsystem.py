@@ -16,7 +16,6 @@ import wpimath.geometry
 from  wpilib.shuffleboard import *
 import constants
 import wpimath.kinematics
-import photonlibpy
 
 class DriveSubsystem(commands2.Subsystem):
 
