@@ -1,23 +1,27 @@
 from commands2 import Subsystem
-from robotpy_apriltag import AprilTagField
 from photonlibpy.photonCamera import PhotonCamera
 from wpimath.geometry import Transform3d, Rotation3d
 from photonlibpy.estimatedRobotPose import EstimatedRobotPose
 from photonlibpy.photonTrackedTarget import PhotonTrackedTarget
+from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 from photonlibpy.photonPipelineResult import PhotonPipelineResult
 from photonlibpy.photonPoseEstimator import PhotonPoseEstimator, PoseStrategy
 
+# NOTE - two targets must be in view to calculate a robot pose!
 
 class OpticalSubsystem(Subsystem):
     STRATEGY: PoseStrategy = PoseStrategy.LOWEST_AMBIGUITY
     FIELD_TAGS: AprilTagField = AprilTagField.k2024Crescendo
 
-    BLUE_CAMERA_OFFSET: Transform3d = Transform3d(-10, -10, 30, Rotation3d(0, 3.14/4, -3.14/2))
+    BLUE_CAMERA_OFFSET: Transform3d = Transform3d(0, 0, 0, Rotation3d())
     GREEN_CAMERA_OFFSET: Transform3d = Transform3d(0, 0, 0, Rotation3d())
 
     BLUE_CAMERA_NAME: str = "blueCamera"
     GREEN_CAMERA_NAME: str = "greenCamera"
 
+    FIELD_TAG_LAYOUT: AprilTagFieldLayout = AprilTagFieldLayout.loadField(FIELD_TAGS)
+
+    # NOTE - robot poses will return as None if unsuccessful!
     bluePose: EstimatedRobotPose | None = None
     greenPose: EstimatedRobotPose | None = None
 
@@ -37,10 +41,10 @@ class OpticalSubsystem(Subsystem):
         self.__greenCamera: PhotonCamera = PhotonCamera(self.GREEN_CAMERA_NAME)
 
         self.__bluePoseEstimator: PhotonPoseEstimator = PhotonPoseEstimator(
-            self.FIELD_TAGS, self.STRATEGY, self.__blueCamera, self.BLUE_CAMERA_OFFSET
+            self.FIELD_TAG_LAYOUT, self.STRATEGY, self.__blueCamera, self.BLUE_CAMERA_OFFSET
         )
         self.__greenPoseEstimator: PhotonPoseEstimator = PhotonPoseEstimator(
-            self.FIELD_TAGS, self.STRATEGY, self.__greenCamera, self.GREEN_CAMERA_OFFSET
+            self.FIELD_TAG_LAYOUT, self.STRATEGY, self.__greenCamera, self.GREEN_CAMERA_OFFSET
         )
 
         return None
@@ -54,7 +58,5 @@ class OpticalSubsystem(Subsystem):
 
         self.blueTargets = blueResult.getTargets()
         self.greenTargets = greenResult.getTargets()
-
-        print(self.bluePose)
 
         return None

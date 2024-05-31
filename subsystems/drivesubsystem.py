@@ -85,10 +85,10 @@ class DriveSubsystem(commands2.Subsystem):
         self.poseXWidget = self.tab.add("Pose X",0)
         self.poseYWidget = self.tab.add("Pose Y",0)
         self.leftEncoderWidget = self.tab.add("LeftEncoder",0)
-        self.leftEncoderDistWidget = self.tab.add("LeftEncoder",0)
+        self.leftEncoderDistWidget = self.tab.add("LeftEncoderDist",0)
         self.leftEncoderDPPWidget = self.tab.add("LeftDistPerPulse",0)
         self.rightEncoderWidget = self.tab.add("RightEncoder",0)
-        self.rightEncoderDistWidget = self.tab.add("RightEncoder",0)
+        self.rightEncoderDistWidget = self.tab.add("RightEncoderDist",0)
         self.rightEncoderDPPWidget = self.tab.add("RightDistPerPulse",0)
 
         #self.photonposeestimator = photonlibpy

@@ -2,13 +2,13 @@
   "MainWindow": {
     "GLOBAL": {
       "fps": "120",
-      "height": "536",
+      "height": "598",
       "maximized": "0",
       "style": "0",
       "userScale": "2",
       "width": "1080",
-      "xpos": "2113",
-      "ypos": "744"
+      "xpos": "1242",
+      "ypos": "1386"
     }
   },
   "Table": {
@@ -53,7 +53,7 @@
     "Entries": {
       "Collapsed": "0",
       "Pos": "0,0",
-      "Size": "1080,536"
+      "Size": "1080,598"
     },
     "Settings": {
       "Collapsed": "0",
