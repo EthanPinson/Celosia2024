@@ -7,12 +7,11 @@ from robotpy_apriltag import AprilTagField, AprilTagFieldLayout
 from photonlibpy.photonPipelineResult import PhotonPipelineResult
 from photonlibpy.photonPoseEstimator import PhotonPoseEstimator, PoseStrategy
 
-# NOTE - two targets must be in view to calculate a robot pose!
-
 class OpticalSubsystem(Subsystem):
     STRATEGY: PoseStrategy = PoseStrategy.LOWEST_AMBIGUITY
     FIELD_TAGS: AprilTagField = AprilTagField.k2024Crescendo
 
+    # from the center of the robot to the camera mount position
     BLUE_CAMERA_OFFSET: Transform3d = Transform3d(0, 0, 0, Rotation3d())
     GREEN_CAMERA_OFFSET: Transform3d = Transform3d(0, 0, 0, Rotation3d())
 
@@ -22,6 +21,7 @@ class OpticalSubsystem(Subsystem):
     FIELD_TAG_LAYOUT: AprilTagFieldLayout = AprilTagFieldLayout.loadField(FIELD_TAGS)
 
     # NOTE - robot poses will return as None if unsuccessful!
+    # NOTE - a minimum of two apriltags in view are required for pose calculation!
     bluePose: EstimatedRobotPose | None = None
     greenPose: EstimatedRobotPose | None = None
 
