@@ -16,12 +16,20 @@ import wpimath.geometry
 from  wpilib.shuffleboard import *
 import constants
 import wpimath.kinematics
+from .opticalsubsystem import OpticalSubsystem
+from photonlibpy.estimatedRobotPose import EstimatedRobotPose
+import wpimath.units
+
+# 9982 - the intake falls to the front of the robot
 
 class DriveSubsystem(commands2.Subsystem):
+
+    opticalSubsystem: OpticalSubsystem = None
 
     def __init__(self) -> None:
         """Creates a new DriveSubsystem"""
         super().__init__()
+        self.opticalSubsystem = OpticalSubsystem()
         # The motors on the left side of the drive.
         
         # phoenix5.VictorSPX(constants.DriveConstants.kLeftMotor1CanID),
@@ -69,6 +77,7 @@ class DriveSubsystem(commands2.Subsystem):
         self.leftEncoder.reset()
         self.rightEncoder.reset()
         self.gyro = navx.AHRS.create_spi()
+
         self.gyro.reset()
         iRot = self.gyro.getRotation2d()
         iPose = wpimath.geometry.Pose2d(0,0,iRot)
@@ -77,7 +86,7 @@ class DriveSubsystem(commands2.Subsystem):
         # self.gyro = wpilib.ADXRS450_Gyro()
         
         self.tab = Shuffleboard.getTab("Drive")
-        self.gyroWidget = self.tab.add("Gyro",0)
+        self.gyroWidget = self.tab.add("Gyro -> getAngle",0)
         self.headingRadians = self.tab.add("Heading(Rad)",0)
         self.headingWidget = self.tab.add("Heading",0)
         self.turnRateWidget = self.tab.add("TurnRate",0)
@@ -90,6 +99,11 @@ class DriveSubsystem(commands2.Subsystem):
         self.rightEncoderWidget = self.tab.add("RightEncoder",0)
         self.rightEncoderDistWidget = self.tab.add("RightEncoderDist",0)
         self.rightEncoderDPPWidget = self.tab.add("RightDistPerPulse",0)
+        self.isThereCamPose = self.tab.add("IsThereCamPose", False)
+
+        self.bluePoseX = self.tab.add("bluePoseX", 0.0)
+        self.bluePoseY = self.tab.add("bluePoseY", 0.0)
+        self.bluePoseRZ = self.tab.add("bluePoseRZ", 0.0)
 
         #self.photonposeestimator = photonlibpy
 
@@ -106,6 +120,19 @@ class DriveSubsystem(commands2.Subsystem):
 
     def periodic(self):
         self.odometry.update(self.gyro.getRotation2d(),self.leftEncoder.getDistance(),self.rightEncoder.getDistance())
+        if self.opticalSubsystem.greenPose != None:
+            # self.camPoseX.getEntry().setFloat(self.opticalSubsystem.bluePose.estimatedPose.X())
+            # self.camPoseY.getEntry().setFloat(self.opticalSubsystem.bluePose.estimatedPose.Y())
+
+            self.bluePoseX.getEntry().setFloat(self.opticalSubsystem.greenPose.estimatedPose.X())
+            self.bluePoseY.getEntry().setFloat(self.opticalSubsystem.greenPose.estimatedPose.Y())
+            self.bluePoseRZ.getEntry().setFloat(self.opticalSubsystem.greenPose.estimatedPose.rotation().z_degrees)
+            timestamp = wpimath.units.seconds(self.opticalSubsystem.greenPose.timestampSeconds)
+            estpose = self.opticalSubsystem.greenPose.estimatedPose
+            self.odometry.addVisionMeasurement(
+                estpose.toPose2d(),
+                timestamp
+            )
         estimatedPosition = self.odometry.getEstimatedPosition()
         self.gyroWidget.getEntry().setDouble(self.gyro.getAngle())
         self.headingWidget.getEntry().setDouble(self.getHeading())
@@ -117,6 +144,11 @@ class DriveSubsystem(commands2.Subsystem):
         self.poseYWidget.getEntry().setDouble(estimatedPosition.Y())
         self.leftEncoderDPPWidget.getEntry().setDouble(self.leftEncoder.getDistancePerPulse())
         self.rightEncoderDPPWidget.getEntry().setDouble(self.rightEncoder.getDistancePerPulse())
+
+        self.leftEncoderDistWidget.getEntry().setFloat(self.leftEncoder.getDistance())
+        self.rightEncoderDistWidget.getEntry().setFloat(self.rightEncoder.getDistance())
+
+        self.isThereCamPose.getEntry().setBoolean(self.opticalSubsystem.bluePose != None)
 
 
     def arcadeDrive(self, fwd: float, rot: float):

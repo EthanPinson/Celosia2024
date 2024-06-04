@@ -3,12 +3,12 @@
     "GLOBAL": {
       "fps": "120",
       "height": "598",
-      "maximized": "0",
+      "maximized": "1",
       "style": "0",
-      "userScale": "2",
+      "userScale": "6",
       "width": "1080",
-      "xpos": "2148",
-      "ypos": "737"
+      "xpos": "479",
+      "ypos": "37"
     }
   },
   "Table": {
@@ -53,7 +53,7 @@
     "Entries": {
       "Collapsed": "0",
       "Pos": "0,0",
-      "Size": "1080,598"
+      "Size": "1600,863"
     },
     "Settings": {
       "Collapsed": "0",

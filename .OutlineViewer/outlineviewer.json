@@ -13,11 +13,29 @@
   "Persistent Values": {
     "open": false
   },
+  "Shuffleboard": {
+    "Drive": {
+      "open": true
+    },
+    "open": true
+  },
+  "combined": true,
   "photonvision@3": {
     "open": true
   },
+  "retained": {
+    "Shuffleboard": {
+      "Drive": {
+        "open": true
+      },
+      "open": true
+    }
+  },
   "transitory": {
     "Shuffleboard": {
+      "Drive": {
+        "open": true
+      },
       "open": true
     },
     "photonvision": {
@@ -29,8 +47,7 @@
       },
       "greenCamera": {
         "open": true
-      },
-      "open": true
+      }
     }
   }
 }

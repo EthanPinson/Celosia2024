@@ -1,5 +1,6 @@
 from commands2 import Subsystem
 from photonlibpy.photonCamera import PhotonCamera
+from wpimath.units import degreesToRadians as torad
 from wpimath.geometry import Transform3d, Rotation3d
 from photonlibpy.estimatedRobotPose import EstimatedRobotPose
 from photonlibpy.photonTrackedTarget import PhotonTrackedTarget
@@ -8,11 +9,11 @@ from photonlibpy.photonPipelineResult import PhotonPipelineResult
 from photonlibpy.photonPoseEstimator import PhotonPoseEstimator, PoseStrategy
 
 class OpticalSubsystem(Subsystem):
-    STRATEGY: PoseStrategy = PoseStrategy.LOWEST_AMBIGUITY
+    STRATEGY: PoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
     FIELD_TAGS: AprilTagField = AprilTagField.k2024Crescendo
 
     # from the center of the robot to the camera mount position
-    BLUE_CAMERA_OFFSET: Transform3d = Transform3d(0, 0, 0, Rotation3d())
+    BLUE_CAMERA_OFFSET: Transform3d = Transform3d(0.1, 0.2, 0.5, Rotation3d(torad(16), torad(180), torad(-90)))
     GREEN_CAMERA_OFFSET: Transform3d = Transform3d(0, 0, 0, Rotation3d())
 
     BLUE_CAMERA_NAME: str = "blueCamera"
