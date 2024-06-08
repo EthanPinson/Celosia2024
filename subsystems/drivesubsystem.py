@@ -20,11 +20,20 @@ from .opticalsubsystem import OpticalSubsystem
 from photonlibpy.estimatedRobotPose import EstimatedRobotPose
 import wpimath.units
 
+from wpimath.controller import RamseteController, SimpleMotorFeedforwardMeters
+from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator
+from wpimath.trajectory.constraint import DifferentialDriveVoltageConstraint
+
+from constants import AutoConstants
+
 # 9982 - the intake falls to the front of the robot
 
 class DriveSubsystem(commands2.Subsystem):
 
     opticalSubsystem: OpticalSubsystem = None
+    ramsete: RamseteController = None
+    voltConstraint: DifferentialDriveVoltageConstraint = None
+    trajectoryConfig: TrajectoryConfig = None
 
     def __init__(self) -> None:
         """Creates a new DriveSubsystem"""
@@ -107,7 +116,7 @@ class DriveSubsystem(commands2.Subsystem):
 
         #self.photonposeestimator = photonlibpy
 
-        pathplannerlib.auto.AutoBuilder.configureRamsete(
+        AutoBuilder.configureRamsete(
             self.odometry.getEstimatedPosition, # Robot pose supplier
             self.odometry.resetPosition, # Method to reset odometry (will be called if your auto has a starting pose)
             self.getCurrentSpeeds, # Current ChassisSpeeds supplier
@@ -116,6 +125,28 @@ class DriveSubsystem(commands2.Subsystem):
             self.shouldFlipPath,
             self # Reference to this subsystem to set requirements
         )
+
+        # blank constructor defaults to b:2.0 zeta:0.7
+        self.ramsete = RamseteController()
+
+        self.voltConstraint = DifferentialDriveVoltageConstraint(
+            SimpleMotorFeedforwardMeters(
+                kS=AutoConstants.ksVolts,
+                kV=AutoConstants.kvVoltSecondsPerMeter,
+                kA=AutoConstants.kaVoltSecondsSquaredPerMeter
+            ),
+            AutoConstants.kDriveKinematics,
+            maxVoltage=10
+        )
+
+        self.trajectoryConfig = TrajectoryConfig(
+            AutoConstants.kMaxSpeedMetersPerSecond,
+            AutoConstants.kMaxAccelerationMetersPerSecondSquared
+        )
+
+        # not sure why these can't just be passed in as constructor parameters?
+        self.trajectoryConfig.setKinematics(AutoConstants.kDriveKinematics)
+        self.trajectoryConfig.addConstraint(self.voltConstraint)
 
 
     def periodic(self):
@@ -251,7 +282,7 @@ class DriveSubsystem(commands2.Subsystem):
         return constants.AutoConstants.kDriveKinematics.toChassisSpeeds(speeds)
     
 
-    def shouldFlipPath():
+    def shouldFlipPath() -> bool:
         # Boolean supplier that controls when the path will be mirrored for the red alliance
         # This will flip the path being followed to the red side of the field.
         # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
