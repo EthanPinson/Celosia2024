@@ -21,24 +21,29 @@ from photonlibpy.estimatedRobotPose import EstimatedRobotPose
 import wpimath.units
 
 from wpimath.controller import RamseteController, SimpleMotorFeedforwardMeters
-from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator
+from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator, Trajectory
 from wpimath.trajectory.constraint import DifferentialDriveVoltageConstraint
 
 from constants import AutoConstants
+
+from RamseteCommand import RamseteCommand
+
+from wpimath.controller import PIDController
 
 # 9982 - the intake falls to the front of the robot
 
 class DriveSubsystem(commands2.Subsystem):
 
-    opticalSubsystem: OpticalSubsystem = None
+    __opticalSubsystem: OpticalSubsystem = None
     ramsete: RamseteController = None
     voltConstraint: DifferentialDriveVoltageConstraint = None
     trajectoryConfig: TrajectoryConfig = None
+    feedforward: SimpleMotorFeedforwardMeters = None
 
     def __init__(self) -> None:
         """Creates a new DriveSubsystem"""
         super().__init__()
-        self.opticalSubsystem = OpticalSubsystem()
+        self.__opticalSubsystem = OpticalSubsystem()
         # The motors on the left side of the drive.
         
         # phoenix5.VictorSPX(constants.DriveConstants.kLeftMotor1CanID),
@@ -129,12 +134,14 @@ class DriveSubsystem(commands2.Subsystem):
         # blank constructor defaults to b:2.0 zeta:0.7
         self.ramsete = RamseteController()
 
-        self.voltConstraint = DifferentialDriveVoltageConstraint(
-            SimpleMotorFeedforwardMeters(
+        self.feedforward = SimpleMotorFeedforwardMeters(
                 kS=AutoConstants.ksVolts,
                 kV=AutoConstants.kvVoltSecondsPerMeter,
                 kA=AutoConstants.kaVoltSecondsSquaredPerMeter
-            ),
+        )
+
+        self.voltConstraint = DifferentialDriveVoltageConstraint(
+            self.feedforward,
             AutoConstants.kDriveKinematics,
             maxVoltage=10
         )
@@ -151,15 +158,15 @@ class DriveSubsystem(commands2.Subsystem):
 
     def periodic(self):
         self.odometry.update(self.gyro.getRotation2d(),self.leftEncoder.getDistance(),self.rightEncoder.getDistance())
-        if self.opticalSubsystem.greenPose != None:
-            # self.camPoseX.getEntry().setFloat(self.opticalSubsystem.bluePose.estimatedPose.X())
-            # self.camPoseY.getEntry().setFloat(self.opticalSubsystem.bluePose.estimatedPose.Y())
+        if self.__opticalSubsystem.greenPose != None:
+            # self.camPoseX.getEntry().setFloat(self.__opticalSubsystem.bluePose.estimatedPose.X())
+            # self.camPoseY.getEntry().setFloat(self.__opticalSubsystem.bluePose.estimatedPose.Y())
 
-            self.bluePoseX.getEntry().setFloat(self.opticalSubsystem.greenPose.estimatedPose.X())
-            self.bluePoseY.getEntry().setFloat(self.opticalSubsystem.greenPose.estimatedPose.Y())
-            self.bluePoseRZ.getEntry().setFloat(self.opticalSubsystem.greenPose.estimatedPose.rotation().z_degrees)
-            timestamp = wpimath.units.seconds(self.opticalSubsystem.greenPose.timestampSeconds)
-            estpose = self.opticalSubsystem.greenPose.estimatedPose
+            self.bluePoseX.getEntry().setFloat(self.__opticalSubsystem.greenPose.estimatedPose.X())
+            self.bluePoseY.getEntry().setFloat(self.__opticalSubsystem.greenPose.estimatedPose.Y())
+            self.bluePoseRZ.getEntry().setFloat(self.__opticalSubsystem.greenPose.estimatedPose.rotation().z_degrees)
+            timestamp = wpimath.units.seconds(self.__opticalSubsystem.greenPose.timestampSeconds)
+            estpose = self.__opticalSubsystem.greenPose.estimatedPose
             self.odometry.addVisionMeasurement(
                 estpose.toPose2d(),
                 timestamp
@@ -179,7 +186,7 @@ class DriveSubsystem(commands2.Subsystem):
         self.leftEncoderDistWidget.getEntry().setFloat(self.leftEncoder.getDistance())
         self.rightEncoderDistWidget.getEntry().setFloat(self.rightEncoder.getDistance())
 
-        self.isThereCamPose.getEntry().setBoolean(self.opticalSubsystem.bluePose != None)
+        self.isThereCamPose.getEntry().setBoolean(self.__opticalSubsystem.bluePose != None)
 
 
     def arcadeDrive(self, fwd: float, rot: float):
@@ -287,3 +294,11 @@ class DriveSubsystem(commands2.Subsystem):
         # This will flip the path being followed to the red side of the field.
         # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
         return DriverStation.getAlliance() == DriverStation.Alliance.kRed
+    
+    def silly(self, trajectory: Trajectory):
+        return RamseteCommand(
+            trajectory, self.getPose2d, self.ramsete, self.feedforward,
+            AutoConstants.kDriveKinematics, self.getCurrentSpeeds,
+            PIDController(AutoConstants.kPDriveVel, 0, 0),
+            PIDController(AutoConstants.kPDriveVel, 0, 0),
+            10, self)

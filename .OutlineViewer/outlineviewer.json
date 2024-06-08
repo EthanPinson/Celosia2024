@@ -1,10 +1,4 @@
 {
-  "Clients": {
-    "open": true
-  },
-  "Connections": {
-    "open": true
-  },
   "NetworkTables Settings": {
     "clientName": "1912-cr-beta",
     "mode": "Client (NT4)",
