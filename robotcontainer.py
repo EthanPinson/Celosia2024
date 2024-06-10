@@ -11,6 +11,8 @@ import commands2
 import commands2.cmd
 import commands2.button
 
+from RamseteCommand import RamseteCommand
+from commands.remmy import Remmy
 import constants
 import subsystems.drivesubsystem
 from subsystems.opticalsubsystem import OpticalSubsystem
@@ -20,6 +22,20 @@ from commands.optics import Optics
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.config import *
 from pathplannerlib.auto import PathPlannerAuto
+
+from commands2 import Command
+from RamseteCommand import RamseteCommand
+from subsystems.drivesubsystem import DriveSubsystem
+from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator
+from wpimath.geometry import Translation2d, Rotation2d, Pose2d
+import commands2
+
+from wpimath.controller import RamseteController, SimpleMotorFeedforwardMeters
+from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator, Trajectory
+from wpimath.trajectory.constraint import DifferentialDriveVoltageConstraint
+
+from constants import AutoConstants
+from wpimath.controller import PIDController
 
 
 class RobotContainer:
@@ -126,7 +142,18 @@ class RobotContainer:
         """
         #return commands2.InstantCommand()
         # return PathPlannerAuto('Example Auto')
-        return Optics(OpticalSubsystem)
+        exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+            start=Pose2d(0, 0, Rotation2d(0)),
+            interiorWaypoints=[Translation2d(1, 1), Translation2d(2, -1)],
+            end=Pose2d(3, 0, Rotation2d(0)),
+            config=self.trajectoryConfig
+        )
+        return RamseteCommand(
+            exampleTrajectory, self.getPose2d, self.ramsete, self.feedforward,
+            AutoConstants.kDriveKinematics, self.getCurrentSpeeds,
+            PIDController(AutoConstants.kPDriveVel, 0, 0),
+            PIDController(AutoConstants.kPDriveVel, 0, 0),
+            10, self)
 
 
 

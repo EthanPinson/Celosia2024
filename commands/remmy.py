@@ -1,4 +1,5 @@
 from commands2 import Command
+from RamseteCommand import RamseteCommand
 from subsystems.drivesubsystem import DriveSubsystem
 from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator
 from wpimath.geometry import Translation2d, Rotation2d, Pose2d
@@ -22,3 +23,4 @@ class Remmy(Command):
             end=Pose2d(3, 0, Rotation2d(0)),
             config=self.trajectoryConfig
         )
+        idk: RamseteCommand = self.legs.silly(exampleTrajectory)
