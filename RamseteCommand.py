@@ -23,7 +23,7 @@ class RamseteCommand(Command):
     m_speeds: Callable[[], DifferentialDriveWheelSpeeds]
     m_leftController: PIDController
     m_rightController: PIDController
-    m_output: Callable[[float, float]]
+    m_output: Callable[[float, float], None]
     m_prevSpeeds: DifferentialDriveWheelSpeeds = DifferentialDriveWheelSpeeds()
     m_prevTime: float
     def __init__(
