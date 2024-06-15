@@ -63,7 +63,7 @@ class RamseteCommand(Command):
         initialState = self.m_trajectory.sample(0)
         self.m_prevSpeeds = self.m_kinematics.toWheelSpeeds(
             ChassisSpeeds(
-                initialState.velocity(),
+                initialState.velocity,
                 0,
                 initialState.curvature * initialState.velocity,
             )

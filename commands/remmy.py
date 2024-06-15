@@ -17,17 +17,17 @@ class Remmy(SequentialCommandGroup):
 
         exampleTrajectory = TrajectoryGenerator.generateTrajectory(
             start=Pose2d(0, 0, Rotation2d(0)),
-            interiorWaypoints=[Translation2d(1, 1), Translation2d(2, -1)],
-            end=Pose2d(3, 0, Rotation2d(0)),
+            interiorWaypoints=[Translation2d(1, 0), Translation2d(0, 1), Translation2d(-1, -1)],
+            end=Pose2d(0, 0, Rotation2d(0)),
             config=self.trajectoryConfig
         )
 
         ramsete = RamseteCommand(
             exampleTrajectory, self.legs.getPose2d, self.legs.ramsete, self.legs.feedforward,
-            AutoConstants.kDriveKinematics, self.legs.getCurrentSpeeds,
+            AutoConstants.kDriveKinematics, self.legs.getCurrentSillySpeeds,
             PIDController(AutoConstants.kPDriveVel, 0, 0),
             PIDController(AutoConstants.kPDriveVel, 0, 0),
-            10, self.legs)
+            self.legs.setVoltages, self.legs)
         
         super().__init__(ramsete)
         

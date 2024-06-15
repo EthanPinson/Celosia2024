@@ -54,7 +54,7 @@ class MyRobot(commands2.TimedCommandRobot):
             print("no auto command?")
 
     def autonomousPeriodic(self) -> None:
-        self.autonomousCommand.checkTarget()
+        # self.autonomousCommand.checkTarget()
         """This function is called periodically during autonomous"""
 
     def teleopInit(self) -> None:

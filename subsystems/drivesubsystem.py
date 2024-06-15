@@ -250,7 +250,8 @@ class DriveSubsystem(commands2.Subsystem):
         returns: postEstimator Pose2d
         """
         #pose = wpimath.geometry.Pose2d(self.getGyroRotation2d(),0,0)
-        pose = wpimath.geometry.Pose2d(self.odometry.getEstimatedPosition())
+        #pose = wpimath.geometry.Pose2d(self.odometry.getEstimatedPosition())
+        pose = self.odometry.getEstimatedPosition()
         return pose
 
 
@@ -288,6 +289,12 @@ class DriveSubsystem(commands2.Subsystem):
         speeds = wpimath.kinematics.DifferentialDriveWheelSpeeds()
         return constants.AutoConstants.kDriveKinematics.toChassisSpeeds(speeds)
     
+    def getCurrentSillySpeeds(self):
+        return wpimath.kinematics.DifferentialDriveWheelSpeeds()
+    
+    def setVoltages(self, left, right):
+        self.leftMotors.setVoltage(left)
+        self.rightMotors.setVoltage(right)
 
     def shouldFlipPath() -> bool:
         # Boolean supplier that controls when the path will be mirrored for the red alliance
