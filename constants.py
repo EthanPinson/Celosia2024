@@ -1,6 +1,7 @@
 
 import math
 from wpimath.kinematics import DifferentialDriveKinematics
+from wpilib import SPI
 
 class DriveConstants:
     kLeftMotorPort = 1
@@ -83,3 +84,27 @@ class OIConstants:
     kDriverLeftBumper = 5
     kDriverXbutton = 3
     kDriverYbutton =  4
+
+class OpticalConstants:
+    # POSE_STRATEGY
+    # TAG_LAYOUT
+    SKEPTICISM: tuple[float, float, float] = (0.1, 0.1, 0.1)
+
+class TrajectoryConstants:
+    MAX_VOLTAGE = 10
+    MAX_VELOCITY: float = 0.5
+    MAX_ACCELERATION: float = 0.5
+
+class ControllerConstants:
+    B: float = 2.0
+    ZETA: float = 0.7
+
+    STATIC_GAIN: float = 2.155 # 9982: 2.03-2.6386
+    VELOCITY_GAIN: float = 2.5377 # 9982: 2.1313-2.7174
+    ACCELERATION_GAIN: float = 1.1553 # 9982: 1.7129-2.7601
+
+class GyroConstants:
+    PORT: SPI.Port = SPI.Port.kMXP
+    BITRATE: int = 500000
+    UPADTE_RATE: int = 60 # Hz
+    SKEPTICISM: tuple[float, float, float] = (0.02, 0.02, 0.01)

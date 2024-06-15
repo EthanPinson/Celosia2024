@@ -30,6 +30,12 @@ from RamseteCommand import RamseteCommand
 
 from wpimath.controller import PIDController
 
+from wpilib.sysid import SysIdRoutineLog
+from commands2.sysid import SysIdRoutine
+from commands2 import Command
+
+from wpilib import RobotController
+
 # 9982 - the intake falls to the front of the robot
 
 class DriveSubsystem(commands2.Subsystem):
@@ -296,6 +302,10 @@ class DriveSubsystem(commands2.Subsystem):
         self.leftMotors.setVoltage(left)
         self.rightMotors.setVoltage(right)
 
+    def setVoltagesBoth(self, both):
+        self.leftMotors.setVoltage(both)
+        self.rightMotors.setVoltage(both)
+
     def shouldFlipPath() -> bool:
         # Boolean supplier that controls when the path will be mirrored for the red alliance
         # This will flip the path being followed to the red side of the field.
@@ -309,3 +319,15 @@ class DriveSubsystem(commands2.Subsystem):
             PIDController(AutoConstants.kPDriveVel, 0, 0),
             PIDController(AutoConstants.kPDriveVel, 0, 0),
             10, self)
+    
+    def logMotors(self, routinelog: SysIdRoutineLog):
+        routinelog.motor("drive-left") \
+            .voltage(self.leftMotors.get() * RobotController.getBatteryVoltage()) \
+            .position(self.leftEncoder.getDistance()) \
+            .velocity(self.leftEncoder.getRate())
+        
+        routinelog.motor("drive-right") \
+            .voltage(self.rightMotors.get() * RobotController.getBatteryVoltage()) \
+            .position(self.rightEncoder.getDistance()) \
+            .velocity(self.rightEncoder.getRate())
+        return

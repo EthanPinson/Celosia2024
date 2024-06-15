@@ -12,6 +12,7 @@ import commands2.cmd
 import commands2.button
 
 from commands.remmy import Remmy
+from commands.shaggy import Shaggy
 import constants
 import subsystems.drivesubsystem
 from subsystems.opticalsubsystem import OpticalSubsystem
@@ -127,7 +128,9 @@ class RobotContainer:
         """
         #return commands2.InstantCommand()
         # return PathPlannerAuto('Example Auto')
-        return Remmy(self.robotDrive)
+        #return subsystems.drivesubsystem.sysIdDynamic(self.robotDrive, 1)
+        #return Remmy(self.robotDrive)
+        return Shaggy(self.robotDrive)
 
 
 
