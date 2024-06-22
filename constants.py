@@ -108,3 +108,23 @@ class GyroConstants:
     BITRATE: int = 500000
     UPADTE_RATE: int = 60 # Hz
     SKEPTICISM: tuple[float, float, float] = (0.02, 0.02, 0.01)
+
+class ShooterConstants: # Spark x2
+    INNER_SPEED: float = 0.9
+    OUTER_SPEED: float = 1.0
+
+    INNER_ID: int = 0
+    OUTER_ID: int = 1
+
+class FeederConstants: # SparkMAX x2
+    NOMINAL_SPEED: float = 0.5
+
+    UPPER_ID: int = 1
+    LOWER_ID: int = 2
+
+class IntakeConstants: # SparkMAX x2
+    ROLLER_UP_SPEED: float = 0.25
+    ROLLER_DN_SPEED: float = 0.20
+
+    UPPER_ID: int = 3
+    LOWER_ID: int = 4
