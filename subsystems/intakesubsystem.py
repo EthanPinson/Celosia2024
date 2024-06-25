@@ -1,4 +1,4 @@
-from commands2 import Subsystem
+from commands2 import Subsystem, RunCommand
 from constants import IntakeConstants as IC
 from rev import CANSparkMax
 
@@ -11,3 +11,9 @@ class IntakeSubsystem(Subsystem):
 
         self.__upperMotor = CANSparkMax(IC.UPPER_ID)
         self.__lowerMotor = CANSparkMax(IC.LOWER_ID)
+
+    def setIn(self) -> RunCommand:
+        return RunCommand(lambda: print("works"))
+    
+    def setOut(self) -> RunCommand:
+        return RunCommand(lambda: print("also works"))
