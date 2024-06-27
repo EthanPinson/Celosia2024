@@ -1,5 +1,4 @@
-from commands2 import Subsystem, Command
-import commands2.cmd
+from commands2 import Subsystem, Command, cmd
 from constants import FeederConstants as FC
 from rev import CANSparkMax
 
@@ -18,11 +17,16 @@ class FeederSubsystem(Subsystem):
         self.__upperMotor.set(FC.NOMINAL_SPEED * mult)
 
     def runFeeder(self) -> Command:
-        return commands2.cmd.runOnce(
-            lambda: self.__setSpeed(1)
+        return cmd.runOnce(
+            lambda: self.__setSpeed(1), self
+        )
+    
+    def runFeederRev(self) -> Command:
+        return cmd.runOnce(
+            lambda: self.__setSpeed(-1), self
         )
     
     def stopFeeder(self) -> Command:
-        return commands2.cmd.runOnce(
-            lambda: self.__setSpeed(0)
+        return cmd.runOnce(
+            lambda: self.__setSpeed(0), self
         )

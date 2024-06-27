@@ -14,8 +14,15 @@ import commands2.button
 from commands.remmy import Remmy
 from commands.shaggy import Shaggy
 import constants
-import subsystems.drivesubsystem
+
 from subsystems.opticalsubsystem import OpticalSubsystem
+from subsystems.drivesubsystem import DriveSubsystem
+from subsystems.feedersubsystem import FeederSubsystem
+from subsystems.intakesubsystem import IntakeSubsystem
+from subsystems.shootersubsystem import ShooterSubsystem
+
+from commands2.button import CommandXboxController
+
 import commands.turntoangle
 import commands.turntoangleprofiled
 from commands.optics import Optics
@@ -30,36 +37,35 @@ class RobotContainer:
     "declarative" paradigm, very little robot logic should actually be handled in the :class:`.Robot`
     periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
     subsystems, commands, and button mappings) should be declared here.
-
     """
+    drive: DriveSubsystem
+    feeder: FeederSubsystem
+    intake: IntakeSubsystem
+    shooter: ShooterSubsystem
+
+    driverController: CommandXboxController
 
     # PathPlanner docs:
     #https://github.com/mjansen4857/pathplanner/wiki/Python-Example:-Build-an-Auto
 
     def __init__(self):
         """The container for the robot. Contains subsystems, OI devices, and commands."""
-        # The robot's subsystems
-        self.robotDrive = subsystems.drivesubsystem.DriveSubsystem()
+        self.drive = DriveSubsystem() 
+        self.feeder = FeederSubsystem()
+        self.intake = IntakeSubsystem()
+        self.shooter = ShooterSubsystem()
 
-        # The driver's controller
-        self.driverController = wpilib.XboxController(
-            constants.OIConstants.kDriverControllerPort
-        )
+        self.driverController = CommandXboxController(constants.OIConstants.kDriverControllerPort)
 
-        # Configure the button bindings
         self.configureButtonBindings()
 
-        # Configure default commands
-        # Set the default drive command to split-stick arcade drive
-        self.robotDrive.setDefaultCommand(
-            # A split-stick arcade command, with forward/backward controlled by the left
-            # hand, and turning controlled by the right.
+        self.drive.setDefaultCommand(
             commands2.RunCommand(
-                lambda: self.robotDrive.arcadeDrive(
+                lambda: self.drive.arcadeDrive(
                     -self.driverController.getLeftY(),
                     -self.driverController.getRightX(),
                 ),
-                self.robotDrive,
+                self.drive,
             )
         )
 
@@ -69,56 +75,18 @@ class RobotContainer:
         factories on commands2.button.CommandGenericHID or one of its
         subclasses (commands2.button.CommandJoystick or command2.button.CommandXboxController).
         """
-        # Drive at half speed when the right bumper is held
-        commands2.button.JoystickButton(
-            self.driverController, wpilib.XboxController.Button.kRightBumper
-        ).onTrue(
-            commands2.InstantCommand(
-                (lambda: self.robotDrive.setMaxOutput(0.25)), self.robotDrive
-            )
-        ).onFalse(
-            commands2.InstantCommand(
-                (lambda: self.robotDrive.setMaxOutput(0.5)), self.robotDrive
-            )
-        )
+        self.driverController.b().onTrue(self.shooter.runShooter()) \
+            .onFalse(self.shooter.stopShooter())
+        
+        self.driverController.y().onTrue(self.intake.runIntake()) \
+            .onFalse(self.intake.stopIntake())
+        
+        self.driverController.x().onTrue(self.feeder.runFeeder()) \
+            .onFalse(self.feeder.stopFeeder())
+        
+        # "a" button makes the robot jump
 
-        # Stabilize robot to drive straight with gyro when left bumper is held
-        commands2.button.JoystickButton(
-            self.driverController, wpilib.XboxController.Button.kLeftBumper
-        ).whileTrue(
-            commands2.PIDCommand(
-                wpimath.controller.PIDController(
-                    constants.DriveConstants.kStabilizationP,
-                    constants.DriveConstants.kStabilizationI,
-                    constants.DriveConstants.kStabilizationD,
-                ),
-                # Close the loop on the turn rate
-                self.robotDrive.getTurnRate,
-                # Setpoint is 0
-                0,
-                # Pipe the output to the turning controls
-                lambda output: self.robotDrive.arcadeDrive(
-                    -self.driverController.getLeftY(), output
-                ),
-                # Require the robot drive
-                self.robotDrive,
-            )
-        )
-
-        # Turn to 90 degrees__init__when the 'X' button is pressed, with a 5 second timeout
-
-        commands2.button.JoystickButton(
-            self.driverController, wpilib.XboxController.Button.kA
-        ).onTrue(commands.turntoangle.TurnToAngle(math.pi/2, self.robotDrive).withTimeout(5))
-
-        # Turn to -90 degrees with a profile when the Circle button is pressed, with a 5 second timeout
-        commands2.button.JoystickButton(
-            self.driverController, wpilib.XboxController.Button.kB
-        ).onTrue(
-            commands.turntoangleprofiled.TurnToAngleProfiled(
-                -90, self.robotDrive
-            ).withTimeout(5)
-        )
+        # for more see https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
     def getAutonomousCommand(self) -> commands2.Command:
         """

@@ -1,5 +1,4 @@
-from commands2 import Subsystem, Command
-import commands2.cmd
+from commands2 import Subsystem, Command, cmd
 from constants import ShooterConstants as SC
 from wpilib import Spark
 
@@ -18,11 +17,16 @@ class ShooterSubsystem(Subsystem):
         self.__outerMotor.set(SC.OUTER_SPEED * mult)
 
     def runShooter(self) -> Command:
-        return commands2.cmd.runOnce(
-            lambda: self.__setSpeed(1)
+        return cmd.runOnce(
+            lambda: self.__setSpeed(1), self
+        )
+    
+    def runShooterRev(self) -> Command:
+        return cmd.runOnce(
+            lambda: self.__setSpeed(-1), self
         )
     
     def stopShooter(self) -> Command:
-        return commands2.cmd.runOnce(
-            lambda: self.__setSpeed(0)
+        return cmd.runOnce(
+            lambda: self.__setSpeed(0), self
         )

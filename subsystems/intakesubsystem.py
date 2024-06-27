@@ -1,11 +1,13 @@
-from commands2 import Subsystem, RunCommand, Command
-import commands2.cmd
+from commands2 import Subsystem, Command, cmd
 from constants import IntakeConstants as IC
 from rev import CANSparkMax
 
 class IntakeSubsystem(Subsystem):
     __upperMotor: CANSparkMax
     __lowerMotor: CANSparkMax
+
+    __isRunning: bool = False
+    __isRunningRev: bool = False
 
     def __init__(self) -> None:
         super().__init__()
@@ -18,11 +20,16 @@ class IntakeSubsystem(Subsystem):
         self.__upperMotor.set(IC.ROLLER_UP_SPEED * mult)
 
     def runIntake(self) -> Command:
-        return commands2.cmd.runOnce(
-            lambda: self.__setSpeed(1)
+        return cmd.runOnce(
+            lambda: self.__setSpeed(1), self
+        )
+    
+    def runIntakeRev(self) -> Command:
+        return cmd.runOnce(
+            lambda: self.__setSpeed(-1), self
         )
     
     def stopIntake(self) -> Command:
-        return commands2.cmd.runOnce(
-            lambda: self.__setSpeed(0)
+        return cmd.runOnce(
+            lambda: self.__setSpeed(0), self
         )
