@@ -13,20 +13,16 @@ class ShooterSubsystem(Subsystem):
         self.__innerMotor = Spark(SC.INNER_ID)
         self.__outerMotor = Spark(SC.OUTER_ID)
 
-    def setSpeed(self):
-        self.__innerMotor.set(SC.INNER_SPEED)
-        self.__outerMotor.set(SC.OUTER_SPEED)
-
-    def stop(self):
-        self.__innerMotor.set(0.)
-        self.__outerMotor.set(0.)
+    def setSpeed(self, mult: int):
+        self.__innerMotor.set(SC.INNER_SPEED * mult)
+        self.__outerMotor.set(SC.OUTER_SPEED * mult)
 
     def runShooter(self) -> Command:
         return commands2.cmd.runOnce(
-            lambda: self.setSpeed()
+            lambda: self.__setSpeed(1)
         )
     
     def stopShooter(self) -> Command:
         return commands2.cmd.runOnce(
-            lambda: self.stop()
+            lambda: self.__setSpeed(0)
         )

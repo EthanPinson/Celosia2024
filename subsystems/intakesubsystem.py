@@ -13,26 +13,16 @@ class IntakeSubsystem(Subsystem):
         self.__upperMotor = CANSparkMax(IC.UPPER_ID)
         self.__lowerMotor = CANSparkMax(IC.LOWER_ID)
 
-    def setSpeed(self):
-        self.__lowerMotor.set(IC.ROLLER_DN_SPEED)
-        self.__upperMotor.set(IC.ROLLER_UP_SPEED)
-
-    def stop(self):
-        self.__lowerMotor.set(0.)
-        self.__upperMotor.set(0.)
+    def __setSpeedx(self, mult: int):
+        self.__lowerMotor.set(IC.ROLLER_DN_SPEED * mult)
+        self.__upperMotor.set(IC.ROLLER_UP_SPEED * mult)
 
     def runIntake(self) -> Command:
         return commands2.cmd.runOnce(
-            lambda: self.setSpeed()
+            lambda: self.__setSpeedx(1)
         )
     
     def stopIntake(self) -> Command:
         return commands2.cmd.runOnce(
-            lambda: self.stop()
+            lambda: self.__setSpeedx(0)
         )
-
-    def setIn(self) -> RunCommand:
-        return RunCommand(lambda: print("works"))
-    
-    def setOut(self) -> RunCommand:
-        return RunCommand(lambda: print("also works"))
