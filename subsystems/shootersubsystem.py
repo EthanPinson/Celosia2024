@@ -13,7 +13,7 @@ class ShooterSubsystem(Subsystem):
         self.__innerMotor = Spark(SC.INNER_ID)
         self.__outerMotor = Spark(SC.OUTER_ID)
 
-    def setSpeed(self, mult: int):
+    def __setSpeed(self, mult: int):
         self.__innerMotor.set(SC.INNER_SPEED * mult)
         self.__outerMotor.set(SC.OUTER_SPEED * mult)
 
