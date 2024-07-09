@@ -34,9 +34,9 @@ from wpilib.sysid import SysIdRoutineLog
 from commands2.sysid import SysIdRoutine
 from commands2 import Command
 
-from wpilib import RobotController, PWMVictorSPX
+from wpilib import RobotController
 
-from phoenix5 import VictorSPX, VictorSPXControlMode, WPI_VictorSPX
+from phoenix5 import WPI_VictorSPX
 
 # 9982 - the intake falls to the front of the robot
 
@@ -65,10 +65,17 @@ class DriveSubsystem(commands2.Subsystem):
         self.rightRearMotor.follow(self.rightFrontMotor)
         self.leftRearMotor.follow(self.leftFrontMotor)
 
+        self.leftMotorGroup = wpilib.MotorControllerGroup(
+         self.leftFrontMotor,
+        )
+
+        self.rightMotorGroup = wpilib.MotorControllerGroup(
+         self.rightFrontMotor,
+        )
+
         # The robot's drive
         self.drive = wpilib.drive.DifferentialDrive(
-            lambda v: self.leftFrontMotor.setVoltage(v),
-            lambda v: self.rightFrontMotor.setVoltage(v)
+            self.leftMotorGroup, self.rightMotorGroup,
             )
 
         # The left-side drive encoder
