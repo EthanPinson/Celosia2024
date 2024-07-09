@@ -73,6 +73,11 @@ class DriveSubsystem(commands2.Subsystem):
          self.rightFrontMotor,
         )
 
+        # We need to invert one side of the drivetrain so that positive voltages
+        # result in both sides moving forward. Depending on how your robot's
+        # gearbox is constructed, you might have to invert the left side instead.
+        self.rightMotorGroup.setInverted(True)
+
         # The robot's drive
         self.drive = wpilib.drive.DifferentialDrive(
             self.leftMotorGroup, self.rightMotorGroup,
@@ -91,11 +96,6 @@ class DriveSubsystem(commands2.Subsystem):
             constants.DriveConstants.kRightEncoderPorts[1],
             constants.DriveConstants.kRightEncoderReversed,
         )
-
-        # We need to invert one side of the drivetrain so that positive voltages
-        # result in both sides moving forward. Depending on how your robot's
-        # gearbox is constructed, you might have to invert the left side instead.
-        # self.rightMotors.setInverted(True)
 
         # Sets the distance per pulse for the encoders
         self.leftEncoder.setDistancePerPulse(
