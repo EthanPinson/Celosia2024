@@ -1,20 +1,17 @@
 from commands2 import Subsystem, Command, cmd
 from constants import FeederConstants as FC
-from rev import CANSparkMax
+from wpilib import Spark
 
 class FeederSubsystem(Subsystem):
-    __upperMotor: CANSparkMax
-    __lowerMotor: CANSparkMax
+    __motor: Spark
 
     def __init__(self) -> None:
         super().__init__()
 
-        self.__upperMotor = CANSparkMax(FC.UPPER_ID)
-        self.__lowerMotor = CANSparkMax(FC.LOWER_ID)
+        self.__motor = Spark(FC.ID)
 
     def __setSpeed(self, mult: int):
-        self.__lowerMotor.set(FC.NOMINAL_SPEED * mult)
-        self.__upperMotor.set(FC.NOMINAL_SPEED * mult)
+        self.__motor.set(FC.NOMINAL_SPEED * mult)
 
     def runFeeder(self) -> Command:
         return cmd.runOnce(

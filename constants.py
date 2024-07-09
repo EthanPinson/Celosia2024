@@ -4,8 +4,11 @@ from wpimath.kinematics import DifferentialDriveKinematics
 from wpilib import SPI
 
 class DriveConstants:
-    kLeftMotorPort = 1
-    kRightMotorPort = 0
+    kLeftFrontMotorPort = 4
+    kLeftRearMotorPort = 3
+
+    kRightFrontMotorPort = 2
+    kRightRearMotorPort = 1
 
     kLeftEncoderPorts = (2, 3)
     kRightEncoderPorts = (0, 1)
@@ -116,15 +119,14 @@ class ShooterConstants: # Spark x2
     INNER_ID: int = 0
     OUTER_ID: int = 1
 
-class FeederConstants: # SparkMAX x2
+class FeederConstants: # Spark x1
     NOMINAL_SPEED: float = 0.5
 
-    UPPER_ID: int = 1
-    LOWER_ID: int = 2
+    ID: int = 2
 
 class IntakeConstants: # SparkMAX x2
     ROLLER_UP_SPEED: float = 0.25
     ROLLER_DN_SPEED: float = 0.20
 
-    UPPER_ID: int = 3
-    LOWER_ID: int = 4
+    UPPER_ID: int = 1 #3
+    LOWER_ID: int = 6 #4

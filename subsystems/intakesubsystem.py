@@ -1,6 +1,6 @@
 from commands2 import Subsystem, Command, cmd
 from constants import IntakeConstants as IC
-from rev import CANSparkMax
+from rev import CANSparkMax, CANSparkLowLevel
 
 class IntakeSubsystem(Subsystem):
     __upperMotor: CANSparkMax
@@ -12,8 +12,8 @@ class IntakeSubsystem(Subsystem):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__upperMotor = CANSparkMax(IC.UPPER_ID)
-        self.__lowerMotor = CANSparkMax(IC.LOWER_ID)
+        self.__upperMotor = CANSparkMax(IC.UPPER_ID, CANSparkLowLevel.MotorType.kBrushless)
+        self.__lowerMotor = CANSparkMax(IC.LOWER_ID, CANSparkLowLevel.MotorType.kBrushless)
 
     def __setSpeed(self, mult: int):
         self.__lowerMotor.set(IC.ROLLER_DN_SPEED * mult)

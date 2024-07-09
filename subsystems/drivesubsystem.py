@@ -34,7 +34,9 @@ from wpilib.sysid import SysIdRoutineLog
 from commands2.sysid import SysIdRoutine
 from commands2 import Command
 
-from wpilib import RobotController
+from wpilib import RobotController, PWMVictorSPX
+
+from phoenix5 import VictorSPX, VictorSPXControlMode, WPI_VictorSPX
 
 # 9982 - the intake falls to the front of the robot
 
@@ -54,18 +56,20 @@ class DriveSubsystem(commands2.Subsystem):
         
         # phoenix5.VictorSPX(constants.DriveConstants.kLeftMotor1CanID),
 
-        self.leftMotors = wpilib.MotorControllerGroup(
-            wpilib.PWMSparkMax(constants.DriveConstants.kLeftMotorPort),
-        )
-    
+        self.leftFrontMotor = WPI_VictorSPX(constants.DriveConstants.kLeftFrontMotorPort)
+        self.leftRearMotor = WPI_VictorSPX(constants.DriveConstants.kLeftRearMotorPort)
 
-        # The motors on the right side of the drive.
-        self.rightMotors = wpilib.MotorControllerGroup(
-            wpilib.PWMSparkMax(constants.DriveConstants.kRightMotorPort),
-        )
+        self.rightFrontMotor = WPI_VictorSPX(constants.DriveConstants.kRightFrontMotorPort)
+        self.rightRearMotor = WPI_VictorSPX(constants.DriveConstants.kRightRearMotorPort)
+
+        self.rightRearMotor.follow(self.rightFrontMotor)
+        self.leftRearMotor.follow(self.leftFrontMotor)
 
         # The robot's drive
-        self.drive = wpilib.drive.DifferentialDrive(self.leftMotors, self.rightMotors)
+        self.drive = wpilib.drive.DifferentialDrive(
+            lambda v: self.leftFrontMotor.setVoltage(v),
+            lambda v: self.rightFrontMotor.setVoltage(v)
+            )
 
         # The left-side drive encoder
         self.leftEncoder = wpilib.Encoder(
@@ -84,7 +88,7 @@ class DriveSubsystem(commands2.Subsystem):
         # We need to invert one side of the drivetrain so that positive voltages
         # result in both sides moving forward. Depending on how your robot's
         # gearbox is constructed, you might have to invert the left side instead.
-        self.rightMotors.setInverted(True)
+        # self.rightMotors.setInverted(True)
 
         # Sets the distance per pulse for the encoders
         self.leftEncoder.setDistancePerPulse(
