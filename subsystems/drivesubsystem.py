@@ -66,11 +66,11 @@ class DriveSubsystem(commands2.Subsystem):
         self.leftRearMotor.follow(self.leftFrontMotor)
 
         self.leftMotorGroup = wpilib.MotorControllerGroup(
-         self.leftFrontMotor,
+            self.leftFrontMotor,
         )
 
         self.rightMotorGroup = wpilib.MotorControllerGroup(
-         self.rightFrontMotor,
+            self.rightFrontMotor,
         )
 
         # We need to invert one side of the drivetrain so that positive voltages

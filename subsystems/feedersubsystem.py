@@ -15,15 +15,12 @@ class FeederSubsystem(Subsystem):
 
     def runFeeder(self) -> Command:
         return cmd.runOnce(
-            lambda: self.__setSpeed(1), self
-        )
+            lambda: self.__setSpeed(1), self)
     
     def runFeederRev(self) -> Command:
         return cmd.runOnce(
-            lambda: self.__setSpeed(-1), self
-        )
+            lambda: self.__setSpeed(-1), self)
     
     def stopFeeder(self) -> Command:
         return cmd.runOnce(
-            lambda: self.__setSpeed(0), self
-        )
+            lambda: self.__setSpeed(0), self)

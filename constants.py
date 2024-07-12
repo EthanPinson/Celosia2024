@@ -10,8 +10,8 @@ class DriveConstants:
     kRightFrontMotorPort = 2
     kRightRearMotorPort = 1
 
-    kLeftEncoderPorts = (2, 3)
-    kRightEncoderPorts = (0, 1)
+    kLeftEncoderPorts = (9, 8)
+    kRightEncoderPorts = (7, 6)
     kLeftEncoderReversed = False
     kRightEncoderReversed = True
 
@@ -120,7 +120,7 @@ class ShooterConstants: # Spark x2
     OUTER_ID: int = 1
 
 class FeederConstants: # Spark x1
-    NOMINAL_SPEED: float = 0.5
+    NOMINAL_SPEED: float = -0.5
 
     ID: int = 2
 
