@@ -93,6 +93,9 @@ class OpticalConstants:
     # TAG_LAYOUT
     SKEPTICISM: tuple[float, float, float] = (0.1, 0.1, 0.1)
 
+    BLUE_USB_DEV_NUM: int = 0
+    GREEN_USB_DEV_NUM: int = 1
+
 class TrajectoryConstants:
     MAX_VOLTAGE = 10
     MAX_VELOCITY: float = 0.5
@@ -113,14 +116,14 @@ class GyroConstants:
     SKEPTICISM: tuple[float, float, float] = (0.02, 0.02, 0.01)
 
 class ShooterConstants: # Spark x2
-    INNER_SPEED: float = 0.9
+    INNER_SPEED: float = 0.9 + 0.1
     OUTER_SPEED: float = 1.0
 
     INNER_ID: int = 0
     OUTER_ID: int = 1
 
 class FeederConstants: # Spark x1
-    NOMINAL_SPEED: float = -0.5
+    NOMINAL_SPEED: float = 0.5
 
     ID: int = 2
 
@@ -130,3 +133,6 @@ class IntakeConstants: # SparkMAX x2
 
     UPPER_ID: int = 1 #3
     LOWER_ID: int = 6 #4
+
+class BeamConstants:
+    CHANNEL: int = 5

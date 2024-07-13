@@ -15,11 +15,12 @@ from commands.remmy import Remmy
 from commands.shaggy import Shaggy
 import constants
 
-from subsystems.opticalsubsystem import OpticalSubsystem
+#from subsystems.opticalsubsystem import OpticalSubsystem
 from subsystems.drivesubsystem import DriveSubsystem
 from subsystems.feedersubsystem import FeederSubsystem
 from subsystems.intakesubsystem import IntakeSubsystem
 from subsystems.shootersubsystem import ShooterSubsystem
+from subsystems.beamsubsystem import BeamSubsystem
 
 from commands2.button import CommandXboxController
 
@@ -30,6 +31,13 @@ from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.config import *
 from pathplannerlib.auto import PathPlannerAuto
 
+from wpilib import CameraServer
+from ntcore import NetworkTableInstance, NetworkTableEntry
+
+from commands2 import SequentialCommandGroup, WaitCommand
+
+from commands.getring import GetRing
+from commands.shootring import ShootRing
 
 class RobotContainer:
     """
@@ -42,22 +50,29 @@ class RobotContainer:
     feeder: FeederSubsystem
     intake: IntakeSubsystem
     shooter: ShooterSubsystem
+    beam: BeamSubsystem
 
     driverController: CommandXboxController
+
+    __camSelection: NetworkTableEntry
 
     # PathPlanner docs:
     #https://github.com/mjansen4857/pathplanner/wiki/Python-Example:-Build-an-Auto
 
     def __init__(self):
         """The container for the robot. Contains subsystems, OI devices, and commands."""
-        self.drive = DriveSubsystem() 
+        self.drive = DriveSubsystem()
         self.feeder = FeederSubsystem()
         self.intake = IntakeSubsystem()
         self.shooter = ShooterSubsystem()
+        self.beam = BeamSubsystem()
 
         self.driverController = CommandXboxController(constants.OIConstants.kDriverControllerPort)
 
         self.configureButtonBindings()
+
+        self.__camSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection")
+        CameraServer.launch("vision.py:main")
 
         self.drive.setDefaultCommand(
             commands2.RunCommand(
@@ -75,6 +90,7 @@ class RobotContainer:
         factories on commands2.button.CommandGenericHID or one of its
         subclasses (commands2.button.CommandJoystick or command2.button.CommandXboxController).
         """
+
         self.driverController.b().onTrue(self.shooter.runShooter()) \
             .onFalse(self.shooter.stopShooter())
         
@@ -84,7 +100,11 @@ class RobotContainer:
         self.driverController.x().onTrue(self.feeder.runFeeder()) \
             .onFalse(self.feeder.stopFeeder())
         
-        # "a" button makes the robot jump
+        self.driverController.a().onTrue(self.feeder.runFeederRev()) \
+            .onFalse(self.feeder.stopFeeder())
+
+        #self.driverController.y().onTrue(GetRing(self.intake, self.feeder, self.beam))
+        #self.driverController.a().onTrue(ShootRing(self.feeder, self.shooter, self.beam))
 
         # for more see https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 
@@ -99,9 +119,3 @@ class RobotContainer:
         #return subsystems.drivesubsystem.sysIdDynamic(self.robotDrive, 1)
         #return Remmy(self.robotDrive)
         return Shaggy(self.robotDrive)
-
-
-
-
-
-
