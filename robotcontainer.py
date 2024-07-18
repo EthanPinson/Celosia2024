@@ -5,6 +5,7 @@
 #
 
 import math
+import numpy
 import wpilib
 import wpimath.controller
 import commands2
@@ -81,7 +82,7 @@ class RobotContainer:
             commands2.RunCommand(
                 lambda: self.drive.arcadeDrive(
                     -self.driverController.getLeftY(),
-                    -self.driverController.getRightX(),
+                    -(math.sqrt(self.driverController.getRightX()) * numpy.sign(self.driverController.getRightX())),
                 ),
                 self.drive,
             )
