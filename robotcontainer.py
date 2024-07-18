@@ -14,6 +14,9 @@ import commands2.button
 from commands.remmy import Remmy
 from commands.shaggy import Shaggy
 from commands.intakering import IntakeRing
+from commands.getring import GetRing
+from commands.shootring import ShootRing
+from commands.ampring import AmpRing
 import constants
 
 #from subsystems.opticalsubsystem import OpticalSubsystem
@@ -37,9 +40,6 @@ from ntcore import NetworkTableInstance, NetworkTableEntry
 
 from commands2 import SequentialCommandGroup, WaitCommand
 
-from commands.getring import GetRing
-from commands.shootring import ShootRing2
-
 class RobotContainer:
     """
     This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -54,6 +54,7 @@ class RobotContainer:
     beam: BeamSubsystem
 
     driverController: CommandXboxController
+    opsController: CommandXboxController
 
     __camSelection: NetworkTableEntry
 
@@ -69,6 +70,7 @@ class RobotContainer:
         self.beam = BeamSubsystem()
 
         self.driverController = CommandXboxController(constants.OIConstants.kDriverControllerPort)
+        self.opsController = CommandXboxController(constants.OIConstants.kOpsControllerPort)
 
         self.configureButtonBindings()
 
@@ -97,17 +99,21 @@ class RobotContainer:
         
         #self.driverController.y().onTrue(self.intake.runIntake()) \
             #.onFalse(self.intake.stopIntake())
-        
-        self.driverController.x().onTrue(self.feeder.runFeeder()) \
-            .onFalse(self.feeder.stopFeeder())
-        
-        self.driverController.a().onTrue(self.feeder.runFeederRev()) \
-            .onFalse(self.feeder.stopFeeder())
 
-        self.driverController.y().whileTrue(IntakeRing(self.intake, self.feeder, self.beam))
-        self.driverController.b().whileTrue(ShootRing2(self.feeder, self.shooter))
+        self.driverController.rightBumper().whileTrue(IntakeRing(self.intake, self.feeder, self.beam))
 
-        # for more see https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
+        self.opsController.rightBumper().whileTrue(IntakeRing(self.intake, self.feeder, self.beam))
+
+        self.opsController.y().whileTrue(ShootRing(self.feeder, self.shooter))
+
+        self.opsController.b().whileTrue(AmpRing(self.feeder, self.shooter))
+
+        self.opsController.a().whileTrue(self.feeder.runFeeder()) \
+            .whileFalse(self.feeder.stopFeeder())
+        
+        self.opsController.x().whileTrue(self.feeder.runFeederRev()) \
+            .whileFalse(self.feeder.stopFeeder())
+        
 
     def getAutonomousCommand(self) -> commands2.Command:
         """

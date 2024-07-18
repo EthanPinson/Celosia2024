@@ -7,7 +7,7 @@ from subsystems.beamsubsystem import BeamSubsystem
 from constants import FeederConstants as FC
 from constants import ShooterConstants as SC
 
-class ShootRing(Command):
+class AmpRing(Command):
     def __init__(self, feeder: FeederSubsystem, shooter: ShooterSubsystem):
         super().__init__()
         self.feeder = feeder
@@ -20,10 +20,10 @@ class ShootRing(Command):
         self.timer.start()
 
     def execute(self):
-        self.shooter.setSpeed(SC.SHOOT_SPEED)
+        self.shooter.setSpeed(SC.AMP_SPEED)
         if self.timer.get() > 0.5:
-            self.feeder.setSpeed(FC.SHOOT_SPEED)
+            self.feeder.setSpeed(FC.AMP_SPEED)
             
     def end(self, interrupted):
-        self.shooter.setSpeed(0.)
-        self.feeder.setSpeed(0.)
+        self.shooter.setSpeed(0.0)
+        self.feeder.setSpeed(0.0)

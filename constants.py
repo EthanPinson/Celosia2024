@@ -88,6 +88,12 @@ class OIConstants:
     kDriverXbutton = 3
     kDriverYbutton =  4
 
+    kOpsControllerPort = 1
+    kOpsRightBumper = 6
+    kOpsLeftBumper = 5
+    kOpsXbutton = 3
+    kOpsYbutton =  4
+
 class OpticalConstants:
     # POSE_STRATEGY
     # TAG_LAYOUT
@@ -116,6 +122,8 @@ class GyroConstants:
     SKEPTICISM: tuple[float, float, float] = (0.02, 0.02, 0.01)
 
 class ShooterConstants: # Spark x2
+    SHOOT_SPEED: float = 1.0
+    AMP_SPEED: float = 0.25
     INNER_SPEED: float = 1.0
     OUTER_SPEED: float = 1.0
 
@@ -124,6 +132,7 @@ class ShooterConstants: # Spark x2
 
 class FeederConstants: # Spark x1
     SHOOT_SPEED: float = 1.0
+    AMP_SPEED: float = 0.25
     INTAKE_SPEED: float = 0.5
 
     ID: int = 2

@@ -14,26 +14,26 @@ class IntakeSubsystem(Subsystem):
 
         self.__upperMotor = CANSparkMax(IC.UPPER_ID, CANSparkLowLevel.MotorType.kBrushless)
         self.__lowerMotor = CANSparkMax(IC.LOWER_ID, CANSparkLowLevel.MotorType.kBrushless)
-        #self.__lowerMotor.ControlType(CANSparkLowLevel.ControlType.kDutyCycle)
-        #self.__upperMotor.ControlType(CANSparkLowLevel.ControlType.kDutyCycle)
 
     def setSpeed(self, mult: int):
-        self.__lowerMotor.set(IC.ROLLER_DN_SPEED * mult)
         self.__upperMotor.set(IC.ROLLER_UP_SPEED * mult)
-        #self.__lowerMotor.setVoltage(IC.ROLLER_DN_SPEED * mult)
-        #self.__upperMotor.setVoltage(IC.ROLLER_UP_SPEED * mult)
+        self.__lowerMotor.set(IC.ROLLER_DN_SPEED * mult)
+
+    def setSpeeds(self, upper_speed: float, lower_speed: float):
+        self.__upperMotor.set(upper_speed)
+        self.__lowerMotor.set(lower_speed)
 
     def runIntake(self) -> Command:
         return cmd.runOnce(
-            lambda: self.setSpeed(1), self
+            lambda: self.setSpeeds(IC.ROLLER_UP_SPEED, IC.ROLLER_DN_SPEED), self
         )
     
     def runIntakeRev(self) -> Command:
         return cmd.runOnce(
-            lambda: self.setSpeed(-1), self
+            lambda: self.setSpeeds(-1. * IC.ROLLER_UP_SPEED, -1. * IC.ROLLER_DN_SPEED), self
         )
     
     def stopIntake(self) -> Command:
         return cmd.runOnce(
-            lambda: self.setSpeed(0), self
+            lambda: self.setSpeeds(0., 0.), self
         )

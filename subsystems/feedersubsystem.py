@@ -7,7 +7,6 @@ class FeederSubsystem(Subsystem):
 
     def __init__(self) -> None:
         super().__init__()
-
         self.__motor = Spark(FC.ID)
 
     def setSpeed(self, speed: float):
