@@ -4,14 +4,14 @@ from wpimath.kinematics import DifferentialDriveKinematics
 from wpilib import SPI
 
 class DriveConstants:
-    kLeftFrontMotorPort = 4
-    kLeftRearMotorPort = 3
+    kLeftFrontMotorPort = 1
+    kLeftRearMotorPort = 2
 
-    kRightFrontMotorPort = 2
-    kRightRearMotorPort = 1
+    kRightFrontMotorPort = 3
+    kRightRearMotorPort = 4
 
-    kLeftEncoderPorts = (9, 8)
-    kRightEncoderPorts = (7, 6)
+    kLeftEncoderPorts = (7, 6)
+    kRightEncoderPorts = (9, 8)
     kLeftEncoderReversed = False
     kRightEncoderReversed = True
 
@@ -116,14 +116,15 @@ class GyroConstants:
     SKEPTICISM: tuple[float, float, float] = (0.02, 0.02, 0.01)
 
 class ShooterConstants: # Spark x2
-    INNER_SPEED: float = 0.9 + 0.1
+    INNER_SPEED: float = 1.0
     OUTER_SPEED: float = 1.0
 
     INNER_ID: int = 0
     OUTER_ID: int = 1
 
 class FeederConstants: # Spark x1
-    NOMINAL_SPEED: float = 0.5
+    SHOOT_SPEED: float = 1.0
+    INTAKE_SPEED: float = 0.5
 
     ID: int = 2
 

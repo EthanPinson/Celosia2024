@@ -13,6 +13,7 @@ import commands2.button
 
 from commands.remmy import Remmy
 from commands.shaggy import Shaggy
+from commands.intakering import IntakeRing
 import constants
 
 #from subsystems.opticalsubsystem import OpticalSubsystem
@@ -37,7 +38,7 @@ from ntcore import NetworkTableInstance, NetworkTableEntry
 from commands2 import SequentialCommandGroup, WaitCommand
 
 from commands.getring import GetRing
-from commands.shootring import ShootRing
+from commands.shootring import ShootRing2
 
 class RobotContainer:
     """
@@ -91,11 +92,11 @@ class RobotContainer:
         subclasses (commands2.button.CommandJoystick or command2.button.CommandXboxController).
         """
 
-        self.driverController.b().onTrue(self.shooter.runShooter()) \
-            .onFalse(self.shooter.stopShooter())
+        #self.driverController.b().onTrue(self.shooter.runShooter()) \
+         #   .onFalse(self.shooter.stopShooter())
         
-        self.driverController.y().onTrue(self.intake.runIntake()) \
-            .onFalse(self.intake.stopIntake())
+        #self.driverController.y().onTrue(self.intake.runIntake()) \
+            #.onFalse(self.intake.stopIntake())
         
         self.driverController.x().onTrue(self.feeder.runFeeder()) \
             .onFalse(self.feeder.stopFeeder())
@@ -103,8 +104,8 @@ class RobotContainer:
         self.driverController.a().onTrue(self.feeder.runFeederRev()) \
             .onFalse(self.feeder.stopFeeder())
 
-        #self.driverController.y().onTrue(GetRing(self.intake, self.feeder, self.beam))
-        #self.driverController.a().onTrue(ShootRing(self.feeder, self.shooter, self.beam))
+        self.driverController.y().whileTrue(IntakeRing(self.intake, self.feeder, self.beam))
+        self.driverController.b().whileTrue(ShootRing2(self.feeder, self.shooter))
 
         # for more see https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html
 

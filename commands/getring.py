@@ -6,8 +6,8 @@ from subsystems.beamsubsystem import BeamSubsystem
 class GetRing(SequentialCommandGroup):
     def __init__(self, intake: IntakeSubsystem, feeder: FeederSubsystem, beam: BeamSubsystem):
         super().__init__(
-            intake.runIntake(),
             feeder.runFeeder(),
+            intake.runIntake(),
             WaitUntilCommand(beam.diginNot),
             feeder.stopFeeder(),
             intake.stopIntake())

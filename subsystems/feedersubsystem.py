@@ -10,17 +10,17 @@ class FeederSubsystem(Subsystem):
 
         self.__motor = Spark(FC.ID)
 
-    def __setSpeed(self, mult: int):
-        self.__motor.set(FC.NOMINAL_SPEED * mult)
+    def setSpeed(self, speed: float):
+        self.__motor.set(speed)
 
     def runFeeder(self) -> Command:
         return cmd.runOnce(
-            lambda: self.__setSpeed(1), self)
+            lambda: self.setSpeed(FC.SHOOT_SPEED), self)
     
     def runFeederRev(self) -> Command:
         return cmd.runOnce(
-            lambda: self.__setSpeed(-1), self)
+            lambda: self.setSpeed(-1.*FC.INTAKE_SPEED), self)
     
     def stopFeeder(self) -> Command:
         return cmd.runOnce(
-            lambda: self.__setSpeed(0), self)
+            lambda: self.setSpeed(0.), self)

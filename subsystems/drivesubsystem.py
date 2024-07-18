@@ -214,8 +214,25 @@ class DriveSubsystem(commands2.Subsystem):
         :param rot: the commanded rotation
         """
 
+        self.drive.arcadeDrive(fwd, rot, squareInputs=True)
+    
+    def myArcadeDrive(self, fwd: float, rot: float):
+        """
+        Drives the robot using arcade controls.
 
-        self.drive.arcadeDrive(fwd, rot)
+        :param fwd: the commanded forward movement
+        :param rot: the commanded rotation
+        """
+        left_speed = fwd + rot
+        right_speed = fwd - rot
+        speed = math.sqrt(left_speed*left_speed + right_speed*right_speed)
+        speed = max(.001,min(speed,1.))
+        left_speed = left_speed / speed
+        right_speed = right_speed / speed
+        self.leftMotorGroup.set(left_speed)
+        self.rightMotorGroup.set(right_speed)
+        print(fwd,rot,speed,left_speed,right_speed)
+        #self.drive.arcadeDrive(fwd, rot, squareInputs=True)
 
     def resetEncoders(self):
         """Resets the drive encoders to currently read a position of 0."""
