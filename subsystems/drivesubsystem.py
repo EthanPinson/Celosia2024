@@ -214,7 +214,7 @@ class DriveSubsystem(commands2.Subsystem):
         :param rot: the commanded rotation
         """
 
-        self.drive.arcadeDrive(fwd, rot, squareInputs=True)
+        self.drive.arcadeDrive(fwd, rot, squareInputs=False)
     
     def myArcadeDrive(self, fwd: float, rot: float):
         """
