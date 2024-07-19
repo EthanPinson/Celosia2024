@@ -41,6 +41,8 @@ from ntcore import NetworkTableInstance, NetworkTableEntry
 
 from commands2 import SequentialCommandGroup, WaitCommand
 
+from commands.fliprewindtime import FlipRewindTime
+
 class RobotContainer:
     """
     This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -82,7 +84,7 @@ class RobotContainer:
             commands2.RunCommand(
                 lambda: self.drive.arcadeDrive(
                     -self.driverController.getLeftY(),
-                    -(math.sqrt(self.driverController.getRightX()) * numpy.sign(self.driverController.getRightX())),
+                    -(math.sqrt(abs(self.driverController.getRightX())) * numpy.sign(self.driverController.getRightX())),
                 ),
                 self.drive,
             )
@@ -114,6 +116,8 @@ class RobotContainer:
         
         self.opsController.x().whileTrue(self.feeder.runFeederRev()) \
             .whileFalse(self.feeder.stopFeeder())
+        
+        #self.driverController.leftBumper().onTrue(FlipRewindTime(self.drive))
         
 
     def getAutonomousCommand(self) -> commands2.Command:

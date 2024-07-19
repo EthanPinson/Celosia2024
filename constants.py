@@ -123,7 +123,7 @@ class GyroConstants:
 
 class ShooterConstants: # Spark x2
     SHOOT_SPEED: float = 1.0
-    AMP_SPEED: float = 0.25
+    AMP_SPEED: float = 0.3
     INNER_SPEED: float = 1.0
     OUTER_SPEED: float = 1.0
 

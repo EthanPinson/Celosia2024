@@ -38,6 +38,8 @@ from wpilib import RobotController
 
 from phoenix5 import WPI_VictorSPX
 
+from commands2 import cmd, RunCommand
+
 # 9982 - the intake falls to the front of the robot
 
 class DriveSubsystem(commands2.Subsystem):
@@ -47,6 +49,8 @@ class DriveSubsystem(commands2.Subsystem):
     voltConstraint: DifferentialDriveVoltageConstraint = None
     trajectoryConfig: TrajectoryConfig = None
     feedforward: SimpleMotorFeedforwardMeters = None
+
+    isRewindTime: bool = False
 
     def __init__(self) -> None:
         """Creates a new DriveSubsystem"""
@@ -207,6 +211,9 @@ class DriveSubsystem(commands2.Subsystem):
 
 
     def arcadeDrive(self, fwd: float, rot: float):
+        if self.isRewindTime == True:
+            fwd *= -1
+
         """
         Drives the robot using arcade controls.
 
