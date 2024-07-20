@@ -16,7 +16,6 @@ import wpimath.geometry
 from  wpilib.shuffleboard import *
 import constants
 import wpimath.kinematics
-from .opticalsubsystem import OpticalSubsystem
 from photonlibpy.estimatedRobotPose import EstimatedRobotPose
 import wpimath.units
 
@@ -44,7 +43,6 @@ from commands2 import cmd, RunCommand
 
 class DriveSubsystem(commands2.Subsystem):
 
-    __opticalSubsystem: OpticalSubsystem = None
     ramsete: RamseteController = None
     voltConstraint: DifferentialDriveVoltageConstraint = None
     trajectoryConfig: TrajectoryConfig = None
@@ -55,7 +53,6 @@ class DriveSubsystem(commands2.Subsystem):
     def __init__(self) -> None:
         """Creates a new DriveSubsystem"""
         super().__init__()
-        self.__opticalSubsystem = OpticalSubsystem()
         # The motors on the left side of the drive.
         
         # phoenix5.VictorSPX(constants.DriveConstants.kLeftMotor1CanID),
@@ -179,7 +176,7 @@ class DriveSubsystem(commands2.Subsystem):
 
     def periodic(self):
         self.odometry.update(self.gyro.getRotation2d(),self.leftEncoder.getDistance(),self.rightEncoder.getDistance())
-        if self.__opticalSubsystem.greenPose != None:
+        if None != None:
             # self.camPoseX.getEntry().setFloat(self.__opticalSubsystem.bluePose.estimatedPose.X())
             # self.camPoseY.getEntry().setFloat(self.__opticalSubsystem.bluePose.estimatedPose.Y())
 
@@ -207,12 +204,10 @@ class DriveSubsystem(commands2.Subsystem):
         self.leftEncoderDistWidget.getEntry().setFloat(self.leftEncoder.getDistance())
         self.rightEncoderDistWidget.getEntry().setFloat(self.rightEncoder.getDistance())
 
-        self.isThereCamPose.getEntry().setBoolean(self.__opticalSubsystem.bluePose != None)
+        #self.isThereCamPose.getEntry().setBoolean(self.__opticalSubsystem.bluePose != None)
 
 
     def arcadeDrive(self, fwd: float, rot: float):
-        if self.isRewindTime == True:
-            fwd *= -1
 
         """
         Drives the robot using arcade controls.

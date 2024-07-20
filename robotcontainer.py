@@ -31,7 +31,6 @@ from commands2.button import CommandXboxController
 
 import commands.turntoangle
 import commands.turntoangleprofiled
-from commands.optics import Optics
 from pathplannerlib.auto import AutoBuilder
 from pathplannerlib.config import *
 from pathplannerlib.auto import PathPlannerAuto
@@ -59,8 +58,6 @@ class RobotContainer:
     driverController: CommandXboxController
     opsController: CommandXboxController
 
-    __camSelection: NetworkTableEntry
-
     # PathPlanner docs:
     #https://github.com/mjansen4857/pathplanner/wiki/Python-Example:-Build-an-Auto
 
@@ -76,9 +73,6 @@ class RobotContainer:
         self.opsController = CommandXboxController(constants.OIConstants.kOpsControllerPort)
 
         self.configureButtonBindings()
-
-        self.__camSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection")
-        CameraServer.launch("vision.py:main")
 
         self.drive.setDefaultCommand(
             commands2.RunCommand(
@@ -130,4 +124,5 @@ class RobotContainer:
         # return PathPlannerAuto('Example Auto')
         #return subsystems.drivesubsystem.sysIdDynamic(self.robotDrive, 1)
         #return Remmy(self.robotDrive)
-        return Shaggy(self.robotDrive)
+        #return Shaggy(self.robotDrive)
+        return None
