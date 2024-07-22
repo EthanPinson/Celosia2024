@@ -25,7 +25,7 @@ from wpimath.trajectory.constraint import DifferentialDriveVoltageConstraint
 
 from constants import AutoConstants
 
-from RamseteCommand import RamseteCommand
+from custom.RamseteCommand import RamseteCommand
 
 from wpimath.controller import PIDController
 
