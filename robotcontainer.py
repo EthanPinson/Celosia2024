@@ -59,7 +59,7 @@ class RobotContainer:
                 self.feeder.setSpeed(0.0),
                 self.shooter.setSpeed(0.0)))
         
-        self.opsController.leftBumper().onTrue(self.drive.toggleRewindTime())
+        self.driverController.leftBumper().onTrue(self.drive.toggleRewindTime())
 
     def getAutonomousCommand(self) -> Command:
         pass
