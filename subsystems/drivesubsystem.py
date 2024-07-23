@@ -48,11 +48,10 @@ class DriveSubsystem(commands2.Subsystem):
     trajectoryConfig: TrajectoryConfig = None
     feedforward: SimpleMotorFeedforwardMeters = None
 
-    isRewindTime: bool = False
-
     def __init__(self) -> None:
         """Creates a new DriveSubsystem"""
         super().__init__()
+        self.isRewindTime = False
         # The motors on the left side of the drive.
         
         # phoenix5.VictorSPX(constants.DriveConstants.kLeftMotor1CanID),
@@ -208,6 +207,8 @@ class DriveSubsystem(commands2.Subsystem):
 
 
     def arcadeDrive(self, fwd: float, rot: float):
+        if self.isRewindTime:
+            fwd *= -1
 
         """
         Drives the robot using arcade controls.
@@ -361,3 +362,9 @@ class DriveSubsystem(commands2.Subsystem):
             .position(self.rightEncoder.getDistance()) \
             .velocity(self.rightEncoder.getRate())
         return
+
+    def toggleRewindTime(self):
+        return cmd.runOnce(self._toggleRewindTime, self)
+
+    def _toggleRewindTime(self):
+        self.isRewindTime = not self.isRewindTime
