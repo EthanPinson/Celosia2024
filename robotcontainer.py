@@ -11,7 +11,7 @@ from subsystems.shootersubsystem import ShooterSubsystem
 
 from commands2.button import CommandXboxController
 
-from commands2 import Command, SequentialCommandGroup
+from commands2 import Command, SequentialCommandGroup, WaitCommand
 
 class RobotContainer:
     driverController = CommandXboxController(0)
@@ -58,6 +58,12 @@ class RobotContainer:
                 self.intake.setSpeed(0.0),
                 self.feeder.setSpeed(0.0),
                 self.shooter.setSpeed(0.0)))
+
+        self.opsController.rightBumper() \
+            .onTrue(SequentialCommandGroup(
+                self.intake.setSpeed(-0.5),
+                WaitCommand(0.5),
+                self.intake.setSpeed(0.0)))
         
         self.driverController.leftBumper().onTrue(self.drive.toggleRewindTime())
 
