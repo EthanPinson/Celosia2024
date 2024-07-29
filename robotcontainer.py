@@ -11,7 +11,7 @@ from subsystems.shootersubsystem import ShooterSubsystem
 
 from commands2.button import CommandXboxController
 
-from commands2 import Command, SequentialCommandGroup, WaitCommand
+from commands2 import Command, SequentialCommandGroup, WaitCommand, ParallelCommandGroup
 
 class RobotContainer:
     driverController = CommandXboxController(0)
@@ -50,11 +50,11 @@ class RobotContainer:
             .onFalse(self.shooter.setSpeed(0.0))
         
         self.opsController.y() \
-            .onTrue(SequentialCommandGroup(
+            .onTrue(ParallelCommandGroup(
                 self.intake.setSpeed(-0.5),
                 self.feeder.setSpeed(-0.5),
                 self.shooter.setSpeed(-0.5))) \
-            .onFalse(SequentialCommandGroup(
+            .onFalse(ParallelCommandGroup(
                 self.intake.setSpeed(0.0),
                 self.feeder.setSpeed(0.0),
                 self.shooter.setSpeed(0.0)))
