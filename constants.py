@@ -3,6 +3,9 @@ import math
 from wpimath.kinematics import DifferentialDriveKinematics
 from wpilib import SPI
 
+from photonlibpy.photonPoseEstimator import PoseStrategy
+from robotpy_apriltag import AprilTagField
+
 class DriveConstants:
     kLeftFrontMotorPort = 1
     kLeftRearMotorPort = 2
@@ -94,14 +97,6 @@ class OIConstants:
     kOpsXbutton = 3
     kOpsYbutton =  4
 
-class OpticalConstants:
-    # POSE_STRATEGY
-    # TAG_LAYOUT
-    SKEPTICISM: tuple[float, float, float] = (0.1, 0.1, 0.1)
-
-    BLUE_USB_DEV_NUM: int = 0
-    GREEN_USB_DEV_NUM: int = 1
-
 class TrajectoryConstants:
     MAX_VOLTAGE = 10
     MAX_VELOCITY: float = 0.5
@@ -146,3 +141,12 @@ class IntakeConstants: # SparkMAX x2
 
 class BeamConstants:
     CHANNEL: int = 5
+
+class OpticalConstants:
+    POSE_STRATEGY = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
+    TAG_FIELD = AprilTagField.k2024Crescendo
+
+    SKEPTICISM: tuple[float, float, float] = (0.1, 0.1, 0.1)
+
+    BLU_USB_NAME: str = "blueCamera"
+    GRN_USB_NAME: str = "greenCamera"

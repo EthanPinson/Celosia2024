@@ -23,9 +23,7 @@ from wpimath.controller import RamseteController, SimpleMotorFeedforwardMeters
 from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator, Trajectory
 from wpimath.trajectory.constraint import DifferentialDriveVoltageConstraint
 
-from constants import AutoConstants
-
-from custom.RamseteCommand import RamseteCommand
+from custom.ramsetecommand import RamseteCommand
 
 from wpimath.controller import PIDController
 
@@ -33,7 +31,14 @@ from wpilib.sysid import SysIdRoutineLog
 from commands2.sysid import SysIdRoutine
 from commands2 import Command
 
-from wpilib import RobotController
+from wpilib import RobotController, Encoder, MotorControllerGroup
+from wpilib.drive import DifferentialDrive
+from wpimath.geometry import Pose2d
+from wpimath.estimator import DifferentialDrivePoseEstimator
+
+from subsystems.opticalsubsystem import OpticalSubsystem
+
+from constants import DriveConstants as Dc, AutoConstants as Ac
 
 from phoenix5 import WPI_VictorSPX
 
@@ -42,169 +47,81 @@ from commands2 import cmd, RunCommand
 # 9982 - the intake falls to the front of the robot
 
 class DriveSubsystem(commands2.Subsystem):
-
-    ramsete: RamseteController = None
-    voltConstraint: DifferentialDriveVoltageConstraint = None
-    trajectoryConfig: TrajectoryConfig = None
-    feedforward: SimpleMotorFeedforwardMeters = None
-
-    def __init__(self) -> None:
-        """Creates a new DriveSubsystem"""
+    def __init__(self, opticalSubsystem: OpticalSubsystem) -> None:
         super().__init__()
+
+        self._eyes = opticalSubsystem
+
         self.isRewindTime = False
-        # The motors on the left side of the drive.
-        
-        # phoenix5.VictorSPX(constants.DriveConstants.kLeftMotor1CanID),
 
-        self.leftFrontMotor = WPI_VictorSPX(constants.DriveConstants.kLeftFrontMotorPort)
-        self.leftRearMotor = WPI_VictorSPX(constants.DriveConstants.kLeftRearMotorPort)
+        self.leftFrontMotor = WPI_VictorSPX(Dc.kLeftFrontMotorPort)
+        self.leftRearMotor = WPI_VictorSPX(Dc.kLeftRearMotorPort)
 
-        self.rightFrontMotor = WPI_VictorSPX(constants.DriveConstants.kRightFrontMotorPort)
-        self.rightRearMotor = WPI_VictorSPX(constants.DriveConstants.kRightRearMotorPort)
+        self.rightFrontMotor = WPI_VictorSPX(Dc.kRightFrontMotorPort)
+        self.rightRearMotor = WPI_VictorSPX(Dc.kRightRearMotorPort)
 
         self.rightRearMotor.follow(self.rightFrontMotor)
         self.leftRearMotor.follow(self.leftFrontMotor)
 
-        self.leftMotorGroup = wpilib.MotorControllerGroup(
-            self.leftFrontMotor,
-        )
+        self.leftMotorGroup = MotorControllerGroup(self.leftFrontMotor)
 
-        self.rightMotorGroup = wpilib.MotorControllerGroup(
-            self.rightFrontMotor,
-        )
-
-        # We need to invert one side of the drivetrain so that positive voltages
-        # result in both sides moving forward. Depending on how your robot's
-        # gearbox is constructed, you might have to invert the left side instead.
+        self.rightMotorGroup = MotorControllerGroup(self.rightFrontMotor)
         self.rightMotorGroup.setInverted(True)
 
-        # The robot's drive
-        self.drive = wpilib.drive.DifferentialDrive(
-            self.leftMotorGroup, self.rightMotorGroup,
-            )
+        self.drive = DifferentialDrive(self.leftMotorGroup, self.rightMotorGroup)
 
-        # The left-side drive encoder
-        self.leftEncoder = wpilib.Encoder(
-            constants.DriveConstants.kLeftEncoderPorts[0],
-            constants.DriveConstants.kLeftEncoderPorts[1],
-            constants.DriveConstants.kLeftEncoderReversed,
-        )
+        self.leftEncoder = Encoder(
+            Dc.kLeftEncoderPorts[0],
+            Dc.kLeftEncoderPorts[1],
+            Dc.kLeftEncoderReversed)
 
-        # The right-side drive encoder
-        self.rightEncoder = wpilib.Encoder(
-            constants.DriveConstants.kRightEncoderPorts[0],
-            constants.DriveConstants.kRightEncoderPorts[1],
-            constants.DriveConstants.kRightEncoderReversed,
-        )
+        self.rightEncoder = Encoder(
+            Dc.kRightEncoderPorts[0],
+            Dc.kRightEncoderPorts[1],
+            Dc.kRightEncoderReversed)
 
-        # Sets the distance per pulse for the encoders
-        self.leftEncoder.setDistancePerPulse(
-            constants.DriveConstants.kEncoderDistancePerPulse
-        )
-        self.rightEncoder.setDistancePerPulse(
-            constants.DriveConstants.kEncoderDistancePerPulse
-        )
+        self.leftEncoder.setDistancePerPulse(Dc.kEncoderDistancePerPulse)
+        self.rightEncoder.setDistancePerPulse(Dc.kEncoderDistancePerPulse)
         
         self.leftEncoder.reset()
         self.rightEncoder.reset()
+
         self.gyro = navx.AHRS.create_spi()
-
         self.gyro.reset()
+
         iRot = self.gyro.getRotation2d()
-        iPose = wpimath.geometry.Pose2d(0,0,iRot)
-        self.odometry = wpimath.estimator.DifferentialDrivePoseEstimator(constants.AutoConstants.kDriveKinematics,self.gyro.getRotation2d(), 0, 0, iPose )
-        self.leftEncoder.setDistancePerPulse(constants.AutoConstants.kEncoderDistancePerTick)
-        # self.gyro = wpilib.ADXRS450_Gyro()
-        
-        self.tab = Shuffleboard.getTab("Drive")
-        self.gyroWidget = self.tab.add("Gyro -> getAngle",0)
-        self.headingRadians = self.tab.add("Heading(Rad)",0)
-        self.headingWidget = self.tab.add("Heading",0)
-        self.turnRateWidget = self.tab.add("TurnRate",0)
-        self.poseRotationWidget = self.tab.add("PoseRotation",0)
-        self.poseXWidget = self.tab.add("Pose X",0)
-        self.poseYWidget = self.tab.add("Pose Y",0)
-        self.leftEncoderWidget = self.tab.add("LeftEncoder",0)
-        self.leftEncoderDistWidget = self.tab.add("LeftEncoderDist",0)
-        self.leftEncoderDPPWidget = self.tab.add("LeftDistPerPulse",0)
-        self.rightEncoderWidget = self.tab.add("RightEncoder",0)
-        self.rightEncoderDistWidget = self.tab.add("RightEncoderDist",0)
-        self.rightEncoderDPPWidget = self.tab.add("RightDistPerPulse",0)
-        self.isThereCamPose = self.tab.add("IsThereCamPose", False)
+        iPose = Pose2d(0, 0, iRot)
 
-        self.bluePoseX = self.tab.add("bluePoseX", 0.0)
-        self.bluePoseY = self.tab.add("bluePoseY", 0.0)
-        self.bluePoseRZ = self.tab.add("bluePoseRZ", 0.0)
+        self.odometry = DifferentialDrivePoseEstimator(Ac.kDriveKinematics, iRot, 0, 0, iPose)
 
-        #self.photonposeestimator = photonlibpy
-
-        AutoBuilder.configureRamsete(
-            self.odometry.getEstimatedPosition, # Robot pose supplier
-            self.odometry.resetPosition, # Method to reset odometry (will be called if your auto has a starting pose)
-            self.getCurrentSpeeds, # Current ChassisSpeeds supplier
-            self, # Method that will drive the robot given ChassisSpeeds
-            ReplanningConfig(), # Default path replanning config. See the API for the options here
-            self.shouldFlipPath,
-            self # Reference to this subsystem to set requirements
-        )
-
-        # blank constructor defaults to b:2.0 zeta:0.7
-        self.ramsete = RamseteController()
+        self.ramsete = RamseteController(Ac.kRamseteB, Ac.kRamseteZeta)
 
         self.feedforward = SimpleMotorFeedforwardMeters(
-                kS=AutoConstants.ksVolts,
-                kV=AutoConstants.kvVoltSecondsPerMeter,
-                kA=AutoConstants.kaVoltSecondsSquaredPerMeter
-        )
+                kS=Ac.ksVolts,
+                kV=Ac.kvVoltSecondsPerMeter,
+                kA=Ac.kaVoltSecondsSquaredPerMeter)
 
         self.voltConstraint = DifferentialDriveVoltageConstraint(
             self.feedforward,
-            AutoConstants.kDriveKinematics,
-            maxVoltage=10
-        )
+            Ac.kDriveKinematics,
+            maxVoltage=10)
 
         self.trajectoryConfig = TrajectoryConfig(
-            AutoConstants.kMaxSpeedMetersPerSecond,
-            AutoConstants.kMaxAccelerationMetersPerSecondSquared
-        )
+            Ac.kMaxSpeedMetersPerSecond,
+            Ac.kMaxAccelerationMetersPerSecondSquared)
 
-        # not sure why these can't just be passed in as constructor parameters?
-        self.trajectoryConfig.setKinematics(AutoConstants.kDriveKinematics)
+        self.trajectoryConfig.setKinematics(Ac.kDriveKinematics)
         self.trajectoryConfig.addConstraint(self.voltConstraint)
 
 
     def periodic(self):
-        self.odometry.update(self.gyro.getRotation2d(),self.leftEncoder.getDistance(),self.rightEncoder.getDistance())
-        if None != None:
-            # self.camPoseX.getEntry().setFloat(self.__opticalSubsystem.bluePose.estimatedPose.X())
-            # self.camPoseY.getEntry().setFloat(self.__opticalSubsystem.bluePose.estimatedPose.Y())
+        self.odometry.update(self.gyro.getRotation2d(), self.leftEncoder.getDistance(), self.rightEncoder.getDistance())
 
-            self.bluePoseX.getEntry().setFloat(self.__opticalSubsystem.greenPose.estimatedPose.X())
-            self.bluePoseY.getEntry().setFloat(self.__opticalSubsystem.greenPose.estimatedPose.Y())
-            self.bluePoseRZ.getEntry().setFloat(self.__opticalSubsystem.greenPose.estimatedPose.rotation().z_degrees)
-            timestamp = wpimath.units.seconds(self.__opticalSubsystem.greenPose.timestampSeconds)
-            estpose = self.__opticalSubsystem.greenPose.estimatedPose
-            self.odometry.addVisionMeasurement(
-                estpose.toPose2d(),
-                timestamp
-            )
-        estimatedPosition = self.odometry.getEstimatedPosition()
-        self.gyroWidget.getEntry().setDouble(self.gyro.getAngle())
-        self.headingWidget.getEntry().setDouble(self.getHeading())
-        self.turnRateWidget.getEntry().setDouble(self.getTurnRate())
-        self.leftEncoderWidget.getEntry().setDouble(self.leftEncoder.get())
-        self.rightEncoderWidget.getEntry().setDouble(self.rightEncoder.get())
-        self.poseRotationWidget.getEntry().setDouble(estimatedPosition.rotation().degrees())
-        self.poseXWidget.getEntry().setDouble(estimatedPosition.X())
-        self.poseYWidget.getEntry().setDouble(estimatedPosition.Y())
-        self.leftEncoderDPPWidget.getEntry().setDouble(self.leftEncoder.getDistancePerPulse())
-        self.rightEncoderDPPWidget.getEntry().setDouble(self.rightEncoder.getDistancePerPulse())
+        if self._eyes.bluPose != None:
+            self.odometry.addVisionMeasurement(self._eyes.bluPose.estimatedPose.toPose2d(), self._eyes.bluPose.timestampSeconds)
 
-        self.leftEncoderDistWidget.getEntry().setFloat(self.leftEncoder.getDistance())
-        self.rightEncoderDistWidget.getEntry().setFloat(self.rightEncoder.getDistance())
-
-        #self.isThereCamPose.getEntry().setBoolean(self.__opticalSubsystem.bluePose != None)
-
+        if self._eyes.grnPose != None:
+            self.odometry.addVisionMeasurement(self._eyes.grnPose.estimatedPose.toPose2d(), self._eyes.grnPose.timestampSeconds)
 
     def arcadeDrive(self, fwd: float, rot: float):
         if self.isRewindTime:
@@ -328,14 +245,30 @@ class DriveSubsystem(commands2.Subsystem):
     
     def getCurrentSillySpeeds(self):
         return wpimath.kinematics.DifferentialDriveWheelSpeeds()
-    
-    def setVoltages(self, left, right):
-        self.leftMotors.setVoltage(left)
-        self.rightMotors.setVoltage(right)
 
+    # === sysid ===
     def setVoltagesBoth(self, both):
-        self.leftMotors.setVoltage(both)
-        self.rightMotors.setVoltage(both)
+        self.leftMotorGroup.setVoltage(both)
+        self.rightMotorGroup.setVoltage(both)
+
+    def logMotors(self, routinelog: SysIdRoutineLog):
+        routinelog.motor("drive-left") \
+            .voltage(self.leftMotorGroup.get() * RobotController.getBatteryVoltage()) \
+            .position(self.leftEncoder.getDistance()) \
+            .velocity(self.leftEncoder.getRate())
+        
+        routinelog.motor("drive-right") \
+            .voltage(self.rightMotorGroup.get() * RobotController.getBatteryVoltage()) \
+            .position(self.rightEncoder.getDistance()) \
+            .velocity(self.rightEncoder.getRate())
+    # === /sysid ===
+
+    def setVoltages(self, left, right):
+        self.leftMotorGroup.setVoltage(left)
+        self.rightMotorGroup.setVoltage(right)
+
+    def setVoltagesC(self, left, right):
+        return cmd.runOnce(lambda: self.setVoltages(left, right), self)
 
     def shouldFlipPath() -> bool:
         # Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -346,22 +279,10 @@ class DriveSubsystem(commands2.Subsystem):
     def silly(self, trajectory: Trajectory):
         return RamseteCommand(
             trajectory, self.getPose2d, self.ramsete, self.feedforward,
-            AutoConstants.kDriveKinematics, self.getCurrentSpeeds,
-            PIDController(AutoConstants.kPDriveVel, 0, 0),
-            PIDController(AutoConstants.kPDriveVel, 0, 0),
+            Ac.kDriveKinematics, self.getCurrentSpeeds,
+            PIDController(Ac.kPDriveVel, 0, 0),
+            PIDController(Ac.kPDriveVel, 0, 0),
             10, self)
-    
-    def logMotors(self, routinelog: SysIdRoutineLog):
-        routinelog.motor("drive-left") \
-            .voltage(self.leftMotors.get() * RobotController.getBatteryVoltage()) \
-            .position(self.leftEncoder.getDistance()) \
-            .velocity(self.leftEncoder.getRate())
-        
-        routinelog.motor("drive-right") \
-            .voltage(self.rightMotors.get() * RobotController.getBatteryVoltage()) \
-            .position(self.rightEncoder.getDistance()) \
-            .velocity(self.rightEncoder.getRate())
-        return
 
     def toggleRewindTime(self):
         return cmd.runOnce(self._toggleRewindTime, self)
