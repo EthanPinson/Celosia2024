@@ -8,6 +8,7 @@ from subsystems.drivesubsystem import DriveSubsystem
 from subsystems.feedersubsystem import FeederSubsystem
 from subsystems.intakesubsystem import IntakeSubsystem
 from subsystems.shootersubsystem import ShooterSubsystem
+from subsystems.opticalsubsystem import OpticalSubsystem
 
 from commands2.button import CommandXboxController
 
@@ -19,7 +20,8 @@ class RobotContainer:
 
     def __init__(self):
         """The container for the robot. Contains subsystems, OI devices, and commands."""
-        self.drive = DriveSubsystem()
+        self.optics = OpticalSubsystem()
+        self.drive = DriveSubsystem(self.optics)
         self.feeder = FeederSubsystem()
         self.intake = IntakeSubsystem()
         self.shooter = ShooterSubsystem()

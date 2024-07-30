@@ -1,3 +1,5 @@
 *cpython*
-*pyc
+__pycache__
 simgui*
+logs
+PathWeaver/Autos
