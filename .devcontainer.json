@@ -6,6 +6,6 @@
     "forwardPorts": [6080],
     "features": {"ghcr.io/devcontainers/features/desktop-lite:1": {}},
     "customizations": {
-      "vscode": {"extensions": ["MS-vsliveshare.vsliveshare", "vscodevim.vim", "aaron-bond.better-comments", "/opt/wpilib_ext.vsix"]}
+      "vscode": {"extensions": ["MS-vsliveshare.vsliveshare", "vscodevim.vim", "aaron-bond.better-comments", "ninoseki.vscode-mogami", "/opt/wpilib_ext.vsix"]}
     }
 }
