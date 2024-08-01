@@ -267,8 +267,8 @@ class DriveSubsystem(commands2.Subsystem):
         self.leftMotorGroup.setVoltage(left)
         self.rightMotorGroup.setVoltage(right)
 
-    def setVoltagesC(self, left, right):
-        return cmd.runOnce(lambda: self.setVoltages(left, right), self)
+    def stopIt(self):
+        return cmd.runOnce(lambda: self.setVoltages(0, 0), self)
 
     def shouldFlipPath() -> bool:
         # Boolean supplier that controls when the path will be mirrored for the red alliance
