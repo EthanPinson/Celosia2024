@@ -37,8 +37,10 @@ from wpimath.geometry import Pose2d
 from wpimath.estimator import DifferentialDrivePoseEstimator
 
 from subsystems.opticalsubsystem import OpticalSubsystem
+from subsystems.limesubsystem import LimeSubsystem
 
-from constants import DriveConstants as Dc, AutoConstants as Ac
+from constants import DriveConstants as Dc, AutoConstants as Ac, OpticalConstants as Oc, LimeConstants as Lc
+from wpilib import RobotController
 
 from phoenix5 import WPI_VictorSPX
 
@@ -47,10 +49,11 @@ from commands2 import cmd, RunCommand
 # 9982 - the intake falls to the front of the robot
 
 class DriveSubsystem(commands2.Subsystem):
-    def __init__(self, opticalSubsystem: OpticalSubsystem) -> None:
+    def __init__(self, opticalSubsystem: OpticalSubsystem, lime: LimeSubsystem) -> None:
         super().__init__()
 
         self._eyes = opticalSubsystem
+        self._lime = lime
 
         self.isRewindTime = False
 
@@ -118,10 +121,14 @@ class DriveSubsystem(commands2.Subsystem):
         self.odometry.update(self.gyro.getRotation2d(), self.leftEncoder.getDistance(), self.rightEncoder.getDistance())
 
         if self._eyes.bluPose != None:
-            self.odometry.addVisionMeasurement(self._eyes.bluPose.estimatedPose.toPose2d(), self._eyes.bluPose.timestampSeconds)
+            self.odometry.addVisionMeasurement(self._eyes.bluPose.estimatedPose.toPose2d(), self._eyes.bluPose.timestampSeconds, Oc.SKEPTICISM)
 
         if self._eyes.grnPose != None:
-            self.odometry.addVisionMeasurement(self._eyes.grnPose.estimatedPose.toPose2d(), self._eyes.grnPose.timestampSeconds)
+            self.odometry.addVisionMeasurement(self._eyes.grnPose.estimatedPose.toPose2d(), self._eyes.grnPose.timestampSeconds, Oc.SKEPTICISM)
+
+        if self._lime.botPose != None:
+            fpgatime = RobotController.getFPGATime()
+            self.odometry.addVisionMeasurement(self._lime.seqToPose(self._lime.botPose), self._lime.calcTimestamp(fpgatime), Lc.SKEPTICISM)
 
     def arcadeDrive(self, fwd: float, rot: float):
         if self.isRewindTime:

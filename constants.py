@@ -150,3 +150,7 @@ class OpticalConstants:
 
     BLU_USB_NAME: str = "blueCamera"
     GRN_USB_NAME: str = "greenCamera"
+
+class LimeConstants:
+    SKEPTICISM: tuple[float, float, float] = (0.5, 0.5, 0.5)
+    NAME: str = "limelight"
