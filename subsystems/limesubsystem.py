@@ -9,12 +9,15 @@ from wpilib import RobotController
 class LimeSubsystem(Subsystem):
     def __init__(self):
         super().__init__()
+        self._limelightNet = NetworkTables.getTable(Lc.NAME)
+
+        self.priTag = None
         self.botPose = None
         self.totalLatency = 0 # ms
-        self._limelightNet = NetworkTables.getTable(Lc.NAME)
 
     def periodic(self):
         self.botPose = self._limelightNet.getEntry("botpose").getDoubleArray(None)
+        self.priTag = self._limelightNet.getEntry("tid")
         self.totalLatency = self._limelightNet.getNumber("cl") + self._limelightNet.getNumber("tl")
 
     @staticmethod
