@@ -4,21 +4,20 @@ from wpimath.units import degreesToRadians as torad
 from wpimath.geometry import Pose2d, Rotation2d
 from typing import Sequence
 from constants import LimeConstants as Lc
-from wpilib import RobotController
 
 class LimeSubsystem(Subsystem):
     def __init__(self):
         super().__init__()
-        self._limelightNet = NetworkTables.getTable(Lc.NAME)
+        self._limeNet = NetworkTables.getTable(Lc.NAME)
 
-        self.priTag = None
         self.botPose = None
+        self.priTag = 0
         self.totalLatency = 0 # ms
 
     def periodic(self):
-        self.botPose = self._limelightNet.getEntry("botpose").getDoubleArray(None)
-        self.priTag = self._limelightNet.getEntry("tid")
-        self.totalLatency = self._limelightNet.getNumber("cl") + self._limelightNet.getNumber("tl")
+        self.botPose = self._limeNet.getNumberArray("botpose", None)
+        self.priTag = self._limeNet.getNumber("tid", Lc.NT_NUM_DEFAULT)
+        self.totalLatency = self._limeNet.getNumber("cl", Lc.NT_NUM_DEFAULT) + self._limeNet.getNumber("tl", Lc.NT_NUM_DEFAULT)
 
     @staticmethod
     def seqToPose(seq: Sequence[float]):
@@ -26,5 +25,6 @@ class LimeSubsystem(Subsystem):
         return None if seq is None else Pose2d(seq[0], seq[1], Rotation2d(torad(seq[5])))
 
     def calcTimestamp(self, tstampUS: int):
-        # tstampUS is FPGA timestamp
-        return (tstampUS / 1000) - self.totalLatency
+        # tstampUS is FPGA timestamp in microseconds
+        tstampUS /= 1000
+        return (tstampUS - self.totalLatency) if self.totalLatency > 0 else (tstampUS - Lc.DEFAULT_LATENCY)

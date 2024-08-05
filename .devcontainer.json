@@ -4,7 +4,8 @@
     "postCreateCommand": "orig=$(pwd);cd /opt;wget -O wpilib_ext.vsix 'https://github.com/wpilibsuite/vscode-wpilib/releases/download/v2024.3.2/vscode-wpilib-2024.3.2.vsix';cd $orig;python3 -m pip install robotpy;python3 -m robotpy sync;pip install -r .requirements.txt",
     "remoteUser": "root",
     "forwardPorts": [6080],
-    "features": {"ghcr.io/devcontainers/features/desktop-lite:1": {}},
+    "features": {
+      "ghcr.io/devcontainers/features/desktop-lite:1": {}},
     "customizations": {
       "vscode": {"extensions": ["MS-vsliveshare.vsliveshare", "vscodevim.vim", "aaron-bond.better-comments", "ninoseki.vscode-mogami", "/opt/wpilib_ext.vsix"]}
     }

@@ -154,3 +154,6 @@ class OpticalConstants:
 class LimeConstants:
     SKEPTICISM: tuple[float, float, float] = (0.5, 0.5, 0.5)
     NAME: str = "limelight"
+
+    NT_NUM_DEFAULT = -100 * (1912) # only change number on right
+    DEFAULT_LATENCY = 60 # ms
