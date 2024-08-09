@@ -8,6 +8,7 @@ from constants import LimeConstants as Lc
 class LimeSubsystem(Subsystem):
     def __init__(self):
         super().__init__()
+        NetworkTables.initialize()
         self._limeNet = NetworkTables.getTable(Lc.NAME)
 
         self.botPose = None

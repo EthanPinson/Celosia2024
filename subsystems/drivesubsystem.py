@@ -46,6 +46,8 @@ from phoenix5 import WPI_VictorSPX
 
 from commands2 import cmd, RunCommand
 
+from wpilib.shuffleboard import Shuffleboard
+
 # 9982 - the intake falls to the front of the robot
 
 class DriveSubsystem(commands2.Subsystem):
@@ -116,6 +118,15 @@ class DriveSubsystem(commands2.Subsystem):
         self.trajectoryConfig.setKinematics(Ac.kDriveKinematics)
         self.trajectoryConfig.addConstraint(self.voltConstraint)
 
+        self.idk = Shuffleboard.getTab("drive")
+        self.idk2 = self.idk.add("encoderleft", 0)
+        self.idk3 = self.idk.add("encoderright", 0)
+        self.idk4 = self.idk.add("gyro", 0)
+        self.idk5 = self.idk.add("odometryX",0)
+        self.idk6 = self.idk.add("odometryY", 0)
+        self.idk7 = self.idk.add("odometryDeg", 0)
+        self.idk8 = self.idk.add("limeTag", 0)
+        self.idk9 = self.idk.add("limeLatency", 0)
 
     def periodic(self):
         self.odometry.update(self.gyro.getRotation2d(), self.leftEncoder.getDistance(), self.rightEncoder.getDistance())
@@ -130,6 +141,15 @@ class DriveSubsystem(commands2.Subsystem):
             fpgatime = RobotController.getFPGATime()
             self.odometry.addVisionMeasurement(self._lime.seqToPose(self._lime.botPose), self._lime.calcTimestamp(fpgatime), Lc.SKEPTICISM)
 
+        self.idk2.getEntry().setInteger(self.leftEncoder.get())
+        self.idk3.getEntry().setInteger(self.rightEncoder.get())
+        self.idk4.getEntry().setFloat(self.gyro.getRotation2d().degrees())
+        self.idk5.getEntry().setFloat(self.odometry.getEstimatedPosition().X())
+        self.idk6.getEntry().setFloat(self.odometry.getEstimatedPosition().Y())
+        self.idk7.getEntry().setFloat(self.odometry.getEstimatedPosition().rotation().degrees())
+        self.idk8.getEntry().setFloat(self._lime.priTag)
+        self.idk9.getEntry().setFloat(self._lime.totalLatency)
+
     def arcadeDrive(self, fwd: float, rot: float):
         if self.isRewindTime:
             fwd *= -1
@@ -142,24 +162,6 @@ class DriveSubsystem(commands2.Subsystem):
         """
 
         self.drive.arcadeDrive(fwd, rot, squareInputs=False)
-    
-    def myArcadeDrive(self, fwd: float, rot: float):
-        """
-        Drives the robot using arcade controls.
-
-        :param fwd: the commanded forward movement
-        :param rot: the commanded rotation
-        """
-        left_speed = fwd + rot
-        right_speed = fwd - rot
-        speed = math.sqrt(left_speed*left_speed + right_speed*right_speed)
-        speed = max(.001,min(speed,1.))
-        left_speed = left_speed / speed
-        right_speed = right_speed / speed
-        self.leftMotorGroup.set(left_speed)
-        self.rightMotorGroup.set(right_speed)
-        print(fwd,rot,speed,left_speed,right_speed)
-        #self.drive.arcadeDrive(fwd, rot, squareInputs=True)
 
     def resetEncoders(self):
         """Resets the drive encoders to currently read a position of 0."""

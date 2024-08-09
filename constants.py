@@ -16,7 +16,7 @@ class DriveConstants:
     kLeftEncoderPorts = (7, 6)
     kRightEncoderPorts = (9, 8)
     kLeftEncoderReversed = False
-    kRightEncoderReversed = True
+    kRightEncoderReversed = False
 
     # Encoder counts per revolution/rotation.
     kEncoderCPR = 360
@@ -58,7 +58,7 @@ class AutoConstants:
     kDriveKinematics = DifferentialDriveKinematics(kTrackWidthMeters)
 
     # Encoder counts per revolution/rotation.
-    kEncoderCPR = 360
+    kEncoderCPR = 250
     kWheelDiameterMeters = 0.152
     kEncoderDistancePerTick = math.pi * kWheelDiameterMeters / kEncoderCPR
 
@@ -153,7 +153,11 @@ class OpticalConstants:
 
 class LimeConstants:
     SKEPTICISM: tuple[float, float, float] = (0.5, 0.5, 0.5)
-    NAME: str = "limelight"
+    NAME: str = "limelight-target"
 
-    NT_NUM_DEFAULT = -100 * (1912) # only change number on right
-    DEFAULT_LATENCY = 60 # ms
+    NT_NUM_DEFAULT = -100 * (1912) # only change rightmost num
+    DEFAULT_LATENCY = 120 # ms
+
+class GyroConstants:
+    BITRATE: int = 500000
+    UPDATE_HZ: int = 60
