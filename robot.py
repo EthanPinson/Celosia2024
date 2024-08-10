@@ -12,7 +12,7 @@ class Robot(TimedCommandRobot):
 
     # robotPeriodic is taken care of by TimedCommandRobot
 
-    def disabledInit(self): pass
+    def disabledInit(self): self.robotContainer.cleanup()
 
     def disabledPeriodic(self): pass
 

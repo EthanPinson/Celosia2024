@@ -154,9 +154,10 @@ class OpticalConstants:
 class LimeConstants:
     SKEPTICISM: tuple[float, float, float] = (0.5, 0.5, 0.5)
     NAME: str = "limelight-target"
+    IP: str = "10.99.72.31"
 
-    NT_NUM_DEFAULT = -100 * (1912) # only change rightmost num
-    DEFAULT_LATENCY = 120 # ms
+    NT_NUM_DEFAULT: int = -11991122
+    DEFAULT_LATENCY: float = 120.0 # ms
 
 class GyroConstants:
     BITRATE: int = 500000

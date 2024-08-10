@@ -4,21 +4,32 @@ from wpimath.units import degreesToRadians as torad
 from wpimath.geometry import Pose2d, Rotation2d
 from typing import Sequence
 from constants import LimeConstants as Lc
+from requests import get
+from websockets.sync.client import connect
+
+# networktables is broken?????????
 
 class LimeSubsystem(Subsystem):
     def __init__(self):
         super().__init__()
-        NetworkTables.initialize()
+        self._socket = connect(f'ws://{Lc.IP}:5806')
         self._limeNet = NetworkTables.getTable(Lc.NAME)
 
         self.botPose = None
-        self.priTag = 0
-        self.totalLatency = 0 # ms
+        self.priTag: int = 0
+        self.totalLatency: float = 0.0 # ms
 
     def periodic(self):
-        self.botPose = self._limeNet.getNumberArray("botpose", None)
-        self.priTag = self._limeNet.getNumber("tid", Lc.NT_NUM_DEFAULT)
-        self.totalLatency = self._limeNet.getNumber("cl", Lc.NT_NUM_DEFAULT) + self._limeNet.getNumber("tl", Lc.NT_NUM_DEFAULT)
+        response = get("http://" + Lc.IP + ":5807/results")
+        if response.status_code != 200: self.botPose = None; return
+        json = response.json()['Results']
+
+        self.totalLatency = json['cl'] + json['tl']
+
+        if len(fiducial := json['Fiducial']) == 0: self.priTag = Lc.NT_NUM_DEFAULT; self.botPose = None; return
+        self.botPose = json['botpose']
+        self.priTag = fiducial[0]['fID']
+        self.offset = (fiducial[0]['tx'], fiducial[0]['ty'])
 
     @staticmethod
     def seqToPose(seq: Sequence[float]):
@@ -29,3 +40,5 @@ class LimeSubsystem(Subsystem):
         # tstampUS is FPGA timestamp in microseconds
         tstampUS /= 1000
         return (tstampUS - self.totalLatency) if self.totalLatency > 0 else (tstampUS - Lc.DEFAULT_LATENCY)
+    
+    def disconnect(self): self._socket.close()

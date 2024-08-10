@@ -42,7 +42,7 @@ class RobotContainer:
 
     def configureBindings(self) -> None:
         self.opsController.b() \
-            .onTrue(self.intake.setSpeed(1.0)) \
+            .onTrue(self.intake.setSpeed(0.5)) \
             .onFalse(self.intake.setSpeed(0.0))
         
         self.opsController.a() \
@@ -73,3 +73,5 @@ class RobotContainer:
 
     def getAutonomousCommand(self) -> Command:
         pass
+
+    def cleanup(self): self.lime.disconnect()
