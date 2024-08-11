@@ -139,7 +139,7 @@ class DriveSubsystem(commands2.Subsystem):
             self.odometry.addVisionMeasurement(self._eyes.grnPose.estimatedPose.toPose2d(), self._eyes.grnPose.timestampSeconds, Oc.SKEPTICISM)
 
         if self._lime.botPose != None:
-            self.idk10.getEntry().setFloatArray(self._lime.botPose)
+            #self.idk10.getEntry().setFloatArray(self._lime.botPose)
             fpgatime = RobotController.getFPGATime()
             self.odometry.addVisionMeasurement(self._lime.seqToPose(self._lime.botPose), self._lime.calcTimestamp(fpgatime), Lc.SKEPTICISM)
 
@@ -150,8 +150,8 @@ class DriveSubsystem(commands2.Subsystem):
         #self.idk5.getEntry().setFloat(self.odometry.getEstimatedPosition().X())
         #self.idk6.getEntry().setFloat(self.odometry.getEstimatedPosition().Y())
         #self.idk7.getEntry().setFloat(self.odometry.getEstimatedPosition().rotation().degrees())
-        self.idk9.getEntry().setFloat(self._lime.totalLatency)
-        self.idk8.getEntry().setInteger(self._lime.priTag)
+        #self.idk9.getEntry().setFloat(self._lime.totalLatency)
+       # self.idk8.getEntry().setInteger(self._lime.priTag)
         #self.idk10.getEntry().setFloatArray(self._lime.botPose)
         #self.idk9.getEntry().setString("Hehe")
 
