@@ -24,6 +24,7 @@ class LimeSubsystem(Subsystem):
     def __aux_init(self):
         self._tcpClient = ModbusTcpClient(f'{Lc.IP}:502')
         self._tcpClient.connect()
+        self.botPose = None
         self._fails = -1
 
     def periodic(self):
