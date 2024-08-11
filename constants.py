@@ -162,6 +162,7 @@ class LimeConstants:
     # number of fetches to fail before aux periodic takes over
     # NOTE: periodic is called very often! set this to a decently high number
     AUX_THRESHOLD: int = 100
+    DO_AUX: bool = True
 
 class GyroConstants:
     BITRATE: int = 500000

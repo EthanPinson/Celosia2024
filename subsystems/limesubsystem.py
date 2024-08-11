@@ -28,7 +28,7 @@ class LimeSubsystem(Subsystem):
         self._fails = -1
 
     def periodic(self):
-        if self._fails >= Lc.AUX_THRESHOLD: self.__aux_init(); DataLogManager.log("[LimeSubsystem]: SWITCHING TO AUX PERIODIC")
+        if self._fails >= Lc.AUX_THRESHOLD and Lc.DO_AUX: self.__aux_init(); DataLogManager.log("[LimeSubsystem]: SWITCHING TO AUX PERIODIC")
         if self._fails < 0: self.__aux_periodic(); return
         try: self.__pri_periodic(); self._fails = 0
         except: self._fails += 1
