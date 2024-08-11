@@ -43,7 +43,7 @@ class LimeSubsystem(Subsystem):
     def __aux_periodic(self):
         regs = self._tcpClient.read_input_registers(0x00, 26).registers
         
-        self.priTag = regs[26]
+        self.priTag = self.readModbusInt(regs, 26)
         self.totalLatency = regs[10] + regs[11]
 
         tx = unpack('f', pack('I', (regs[17] << 16) | regs[16]))[0]
@@ -53,6 +53,9 @@ class LimeSubsystem(Subsystem):
     def seqToPose(seq: Sequence[float]):
         # pulls x,y,yaw
         return None if seq is None else Pose2d(seq[0], seq[1], Rotation2d(torad(seq[5])))
+    
+    @staticmethod
+    def readModbusInt(regs: list, index):return unpack(pack('<i', regs[index]))
 
     def calcTimestamp(self, tstampUS: int):
         # tstampUS is FPGA timestamp in microseconds
