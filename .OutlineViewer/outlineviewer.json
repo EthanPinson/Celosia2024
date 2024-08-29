@@ -9,8 +9,34 @@
     "mode": "Client (NT4)",
     "serverTeam": "9972"
   },
+  "Persistent Values": {
+    "open": false
+  },
+  "Server": {
+    "Publishers": {
+      "open": true
+    },
+    "open": true
+  },
+  "outlineviewer@1": {
+    "open": true
+  },
   "retained": {
+    "limelight-bread": {
+      "open": true
+    },
     "limelight-target": {
+      "open": true
+    }
+  },
+  "transitory": {
+    "photonvision": {
+      "blueCamera": {
+        "open": true
+      },
+      "greenCamera": {
+        "open": true
+      },
       "open": true
     }
   }

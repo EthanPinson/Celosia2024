@@ -51,11 +51,11 @@ from wpilib.shuffleboard import Shuffleboard
 # 9982 - the intake falls to the front of the robot
 
 class DriveSubsystem(commands2.Subsystem):
-    def __init__(self, opticalSubsystem: OpticalSubsystem, lime: LimeSubsystem) -> None:
+    def __init__(self, opticalSubsystem: OpticalSubsystem, limeSubsystem: LimeSubsystem) -> None:
         super().__init__()
 
         self._eyes = opticalSubsystem
-        self._lime = lime
+        self._lime = limeSubsystem
 
         self.isRewindTime = False
 
@@ -167,6 +167,11 @@ class DriveSubsystem(commands2.Subsystem):
         """
 
         self.drive.arcadeDrive(fwd, rot, squareInputs=False)
+
+    def arcade(self, fwd: float, rot: float):
+        if self.isRewindTime: fwd *= -1
+
+        self.drive.arcadeDrive(fwd, rot, squareInputs=True)
 
     def resetEncoders(self):
         """Resets the drive encoders to currently read a position of 0."""

@@ -32,9 +32,9 @@ class RobotContainer:
 
         self.drive.setDefaultCommand(
             commands2.RunCommand(
-                lambda: self.drive.arcadeDrive(
+                lambda: self.drive.arcade(
                     -self.driverController.getLeftY(),
-                    -(math.sqrt(abs(self.driverController.getRightX())) * numpy.sign(self.driverController.getRightX())),
+                    -self.driverController.getRightX(),
                 ),
                 self.drive,
             )
@@ -74,4 +74,4 @@ class RobotContainer:
     def getAutonomousCommand(self) -> Command:
         pass
 
-    def cleanup(self): self.lime.disconnect()
+    #def cleanup(self): self.lime.disconnect()

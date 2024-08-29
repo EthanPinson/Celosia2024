@@ -3,16 +3,18 @@
 from commands2 import TimedCommandRobot, CommandScheduler
 from wpilib import DataLogManager, DriverStation
 from robotcontainer import RobotContainer
+from networktables import NetworkTables
 
 class Robot(TimedCommandRobot):
     def robotInit(self):
         DataLogManager.start()
         self.autoCmd = None
         self.robotContainer = RobotContainer()
+        NetworkTables.initialize(server='roborio-9972-frc.local')
 
     # robotPeriodic is taken care of by TimedCommandRobot
 
-    def disabledInit(self): self.robotContainer.cleanup()
+    #def disabledInit(self): self.robotContainer.cleanup()
 
     def disabledPeriodic(self): pass
 
