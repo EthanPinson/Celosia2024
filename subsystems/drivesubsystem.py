@@ -129,6 +129,16 @@ class DriveSubsystem(commands2.Subsystem):
         self.idk9 = self.idk.add("limeLatency", 0)
         self.idk10 = self.idk.add("rawlimepose", [0, 0, 0, 0])
 
+        AutoBuilder.configureRamsete(
+            self.getPose2d, # Robot pose supplier
+            self.resetPose, # Method to reset odometry (will be called if your auto has a starting pose)
+            self.getCurrentSpeeds, # Current ChassisSpeeds supplier
+            self.driveChassisSpeeds, # Method that will drive the robot given ChassisSpeeds
+            ReplanningConfig(), # Default path replanning config. See the API for the options here
+            self.shouldFlipPath, # Supplier to control path flipping based on alliance color
+            self # Reference to this subsystem to set requirements
+        )
+
     def periodic(self):
         self.odometry.update(self.gyro.getRotation2d(), self.leftEncoder.getDistance(), self.rightEncoder.getDistance())
 
@@ -143,17 +153,15 @@ class DriveSubsystem(commands2.Subsystem):
             fpgatime = RobotController.getFPGATime()
             self.odometry.addVisionMeasurement(self._lime.seqToPose(self._lime.botPose), self._lime.calcTimestamp(fpgatime), Lc.SKEPTICISM)
 
-        #print(self._lime.totalLatency)
-        #self.idk2.getEntry().setInteger(self.leftEncoder.get())
-        #self.idk3.getEntry().setInteger(self.rightEncoder.get())
-        #self.idk4.getEntry().setFloat(self.gyro.getRotation2d().degrees())
-        #self.idk5.getEntry().setFloat(self.odometry.getEstimatedPosition().X())
-        #self.idk6.getEntry().setFloat(self.odometry.getEstimatedPosition().Y())
-        #self.idk7.getEntry().setFloat(self.odometry.getEstimatedPosition().rotation().degrees())
-        #self.idk9.getEntry().setFloat(self._lime.totalLatency)
-       # self.idk8.getEntry().setInteger(self._lime.priTag)
-        #self.idk10.getEntry().setFloatArray(self._lime.botPose)
-        #self.idk9.getEntry().setString("Hehe")
+    def driveChassisSpeeds(self, chassis_speeds: wpimath.kinematics.ChassisSpeeds):
+        wheelSpeeds = constants.AutoConstants.kDriveKinematics.toWheelSpeeds(chassis_speeds)
+        self.drive.tankDrive(wheelSpeeds.left, wheelSpeeds.right, False)
+
+    def shouldFlipPath():
+        # Boolean supplier that controls when the path will be mirrored for the red alliance
+        # This will flip the path being followed to the red side of the field.
+        # THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        return DriverStation.getAlliance() == DriverStation.Alliance.kRed
 
     def arcadeDrive(self, fwd: float, rot: float):
         if self.isRewindTime:
@@ -216,6 +224,11 @@ class DriveSubsystem(commands2.Subsystem):
         """
         self.gyro.reset()
 
+    def resetPose(self, newpose: Pose2d):
+        """
+        Resets the current odometry of the robot to the input newpose.
+        """
+        self.odometry.resetPosition(newpose.rotation(), 0., 0., newpose)
 
     def getPose2d(self) -> wpimath.geometry.Pose2d:
         """
