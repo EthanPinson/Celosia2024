@@ -139,6 +139,10 @@ class IntakeConstants: # SparkMAX x2
     UPPER_ID: int = 1 #3
     LOWER_ID: int = 6 #4
 
+class AmpConstants: # VictorSPX x1
+    AM_IN_SPEED: float = 0.25
+    MOTOR_ID: int = 9 #3
+
 class BeamConstants:
     CHANNEL: int = 5
 

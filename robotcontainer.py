@@ -8,6 +8,7 @@ from subsystems.drivesubsystem import DriveSubsystem
 from subsystems.feedersubsystem import FeederSubsystem
 from subsystems.intakesubsystem import IntakeSubsystem
 from subsystems.shootersubsystem import ShooterSubsystem
+from subsystems.ampsubsystem import AmpSubsystem
 from subsystems.opticalsubsystem import OpticalSubsystem
 from subsystems.limesubsystem import LimeSubsystem
 
@@ -27,6 +28,7 @@ class RobotContainer:
         self.feeder = FeederSubsystem()
         self.intake = IntakeSubsystem()
         self.shooter = ShooterSubsystem()
+        self.amp = AmpSubsystem()
 
         self.configureBindings()
 
@@ -44,15 +46,15 @@ class RobotContainer:
         self.opsController.b() \
             .onTrue(self.intake.setSpeed(0.5)) \
             .onFalse(self.intake.setSpeed(0.0))
-        
+
         self.opsController.a() \
             .onTrue(self.feeder.setSpeed(1.0)) \
             .onFalse(self.feeder.setSpeed(0.0))
-        
+
         self.opsController.x() \
             .onTrue(self.shooter.setSpeed(1.0)) \
             .onFalse(self.shooter.setSpeed(0.0))
-        
+
         self.opsController.y() \
             .onTrue(ParallelCommandGroup(
                 self.intake.setSpeed(-0.5),
@@ -63,12 +65,20 @@ class RobotContainer:
                 self.feeder.setSpeed(0.0),
                 self.shooter.setSpeed(0.0)))
 
+        self.opsController.povDown() \
+            .onTrue(self.amp.setSpeed(-.25)) \
+            .onFalse(self.amp.setSpeed(0.0))
+
+        self.opsController.povUp() \
+            .onTrue(self.amp.setSpeed(.25)) \
+            .onFalse(self.amp.setSpeed(0.0))
+
         self.opsController.rightBumper() \
             .onTrue(SequentialCommandGroup(
                 self.intake.setSpeed(-0.5),
                 WaitCommand(0.5),
                 self.intake.setSpeed(0.0)))
-        
+
         self.driverController.leftBumper().onTrue(self.drive.toggleRewindTime())
 
     def getAutonomousCommand(self) -> Command:

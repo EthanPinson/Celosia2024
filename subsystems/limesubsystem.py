@@ -14,12 +14,24 @@ class LimeSubsystem(Subsystem):
         self.botPose = None
         self.priTag: int = 0
         self.totalLatency: float = 0.0 # ms
+        self.counter: int = 0 # ms
+        self.tv: int = None
+        self.tx: int = None
+        self.ty: int = None
+        self.txnc: int = None
+        self.tync: int = None
 
     def periodic(self):
+        self.tv = self._limeNet.getNumber("tv", None)
+        self.tx = self._limeNet.getNumber("tx", None)
+        self.ty = self._limeNet.getNumber("ty", None)
+        self.txnc = self._limeNet.getNumber("txnc", None)
+        self.tync = self._limeNet.getNumber("tync", None)
         self.botPose = self._limeNet.getNumberArray("botpose", None)
         self.priTag = self._limeNet.getNumber("tid", -1)
         self.totalLatency = self._limeNet.getValue("tl", -1) + self._limeNet.getValue("cl", -1)
-        print(self.totalLatency)
+        #print(self.tv, self.tx, self.ty, self.txnc, self.tync)
+        #print(self.totalLatency)
 
     @staticmethod
     def seqToPose(seq: Sequence[float]):
