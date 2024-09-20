@@ -56,21 +56,15 @@ class RobotContainer:
             .onFalse(self.shooter.setSpeed(0.0))
 
         self.opsController.y() \
-            .onTrue(ParallelCommandGroup(
-                self.intake.setSpeed(-0.5),
-                self.feeder.setSpeed(-0.5),
-                self.shooter.setSpeed(-0.5))) \
-            .onFalse(ParallelCommandGroup(
-                self.intake.setSpeed(0.0),
-                self.feeder.setSpeed(0.0),
-                self.shooter.setSpeed(0.0)))
+            .onTrue(self.setAll(-0.5)) \
+            .onFalse(self.setAll(0.0))
 
         self.opsController.povDown() \
-            .onTrue(self.amp.setSpeed(-.25)) \
+            .onTrue(self.amp.setSpeed(-0.75)) \
             .onFalse(self.amp.setSpeed(0.0))
 
         self.opsController.povUp() \
-            .onTrue(self.amp.setSpeed(.25)) \
+            .onTrue(self.amp.setSpeed(0.75)) \
             .onFalse(self.amp.setSpeed(0.0))
 
         self.opsController.rightBumper() \
@@ -81,7 +75,17 @@ class RobotContainer:
 
         self.driverController.leftBumper().onTrue(self.drive.toggleRewindTime())
 
+    def setAll(self, speed: float):
+        return ParallelCommandGroup(
+            self.intake.setSpeed(speed),
+            self.feeder.setSpeed(speed),
+            self.shooter.setSpeed(speed))
+
     def getAutonomousCommand(self) -> Command:
-        pass
+        return SequentialCommandGroup(
+            self.shooter.setSpeed(1.0),
+            self.feeder.setSpeed(1.0),
+            WaitCommand(1), self.intake.setSpeed(0.5),
+            WaitCommand(1), self.setAll(0.0))
 
     #def cleanup(self): self.lime.disconnect()

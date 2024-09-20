@@ -163,12 +163,6 @@ class LimeConstants:
     NT_NUM_DEFAULT: int = -11991122
     DEFAULT_LATENCY: float = 120.0 # ms
 
-    # number of fetches to fail before aux periodic takes over
-    # NOTE: periodic is called very often! set this to a decently high number
-    # NAH DONT USE THIS
-    #AUX_THRESHOLD: int = 101
-    #DO_AUX: bool = True
-
 class GyroConstants:
     BITRATE: int = 500000
     UPDATE_HZ: int = 60

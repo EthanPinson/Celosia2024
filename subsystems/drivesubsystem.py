@@ -48,6 +48,8 @@ from commands2 import cmd, RunCommand
 
 from wpilib.shuffleboard import Shuffleboard
 
+from wpilib import SmartDashboard
+
 # 9982 - the intake falls to the front of the robot
 
 class DriveSubsystem(commands2.Subsystem):
