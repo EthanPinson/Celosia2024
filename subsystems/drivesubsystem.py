@@ -135,23 +135,26 @@ class DriveSubsystem(commands2.Subsystem):
         self.odometry.update(self.gyro.getRotation2d(), self.leftEncoder.getDistance(), self.rightEncoder.getDistance())
 
         if self._eyes.bluPose != None:
-            self.odometry.addVisionMeasurement(self._eyes.bluPose.estimatedPose.toPose2d(), self._eyes.bluPose.timestampSeconds, Oc.SKEPTICISM)
+            pass
+            #self.odometry.addVisionMeasurement(self._eyes.bluPose.estimatedPose.toPose2d(), self._eyes.bluPose.timestampSeconds, Oc.SKEPTICISM)
 
         if self._eyes.grnPose != None:
-            self.odometry.addVisionMeasurement(self._eyes.grnPose.estimatedPose.toPose2d(), self._eyes.grnPose.timestampSeconds, Oc.SKEPTICISM)
+            pass
+            #self.odometry.addVisionMeasurement(self._eyes.grnPose.estimatedPose.toPose2d(), self._eyes.grnPose.timestampSeconds, Oc.SKEPTICISM)
 
         if self._lime.botPose != None:
+            pass
             #self.idk10.getEntry().setFloatArray(self._lime.botPose)
-            fpgatime = RobotController.getFPGATime()
-            self.odometry.addVisionMeasurement(self._lime.seqToPose(self._lime.botPose), self._lime.calcTimestamp(fpgatime), Lc.SKEPTICISM)
+            #fpgatime = RobotController.getFPGATime()
+            #self.odometry.addVisionMeasurement(self._lime.seqToPose(self._lime.botPose), self._lime.calcTimestamp(fpgatime), Lc.SKEPTICISM)
 
         #print(self._lime.totalLatency)
-        #self.idk2.getEntry().setInteger(self.leftEncoder.get())
-        #self.idk3.getEntry().setInteger(self.rightEncoder.get())
-        #self.idk4.getEntry().setFloat(self.gyro.getRotation2d().degrees())
-        #self.idk5.getEntry().setFloat(self.odometry.getEstimatedPosition().X())
-        #self.idk6.getEntry().setFloat(self.odometry.getEstimatedPosition().Y())
-        #self.idk7.getEntry().setFloat(self.odometry.getEstimatedPosition().rotation().degrees())
+        self.idk2.getEntry().setInteger(self.leftEncoder.get())
+        self.idk3.getEntry().setInteger(self.rightEncoder.get())
+        self.idk4.getEntry().setFloat(self.gyro.getRotation2d().degrees())
+        self.idk5.getEntry().setFloat(self.odometry.getEstimatedPosition().X())
+        self.idk6.getEntry().setFloat(self.odometry.getEstimatedPosition().Y())
+        self.idk7.getEntry().setFloat(self.odometry.getEstimatedPosition().rotation().degrees())
         #self.idk9.getEntry().setFloat(self._lime.totalLatency)
        # self.idk8.getEntry().setInteger(self._lime.priTag)
         #self.idk10.getEntry().setFloatArray(self._lime.botPose)

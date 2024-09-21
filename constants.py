@@ -15,8 +15,8 @@ class DriveConstants:
 
     kLeftEncoderPorts = (7, 6)
     kRightEncoderPorts = (9, 8)
-    kLeftEncoderReversed = False
-    kRightEncoderReversed = False
+    kLeftEncoderReversed = True
+    kRightEncoderReversed = True
 
     # Encoder counts per revolution/rotation.
     kEncoderCPR = 360

@@ -9,6 +9,6 @@ class SewSubsystem(Subsystem):
         self._opPath = getOperatingDirectory()
 
     def readJson(self, name) -> Trajectory:
-        jsonpath = join("/home/lvuser/py_new/PathWeaver/output/", name + ".wpilib.json")
+        jsonpath = join("/home/lvuser/py/PathWeaver/output", name + ".wpilib.json")
         print(jsonpath)
         return TrajectoryUtil.fromPathweaverJson(jsonpath)
