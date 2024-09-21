@@ -7,7 +7,7 @@ from constants import AutoConstants as Ac
 
 class RamTest(SequentialCommandGroup):
     def __init__(self, drive: DriveSubsystem, sew: SewSubsystem):
-        exampleTrajectory = sew.readJson("example")
+        exampleTrajectory = sew.readJson("blueidk")
         
         super().__init__(RamseteCommand(
             exampleTrajectory, drive.getPose2d, drive.ramsete, drive.feedforward,

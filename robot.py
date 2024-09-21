@@ -5,12 +5,17 @@ from wpilib import DataLogManager, DriverStation
 from robotcontainer import RobotContainer
 from networktables import NetworkTables
 
+from constants import RoboRioConstants as RRc
+
 class Robot(TimedCommandRobot):
     def robotInit(self):
-        DataLogManager.start()
+        DataLogManager.start(period=RRc.LOG_FLUSH_PERIOD)
+        DataLogManager.logNetworkTables(RRc.LOG_NT)
+
         self.autoCmd = None
         self.robotContainer = RobotContainer()
-        NetworkTables.initialize(server='roborio-9972-frc.local')
+
+        NetworkTables.startClient(RRc.IP)
 
     # robotPeriodic is taken care of by TimedCommandRobot
 

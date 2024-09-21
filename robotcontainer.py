@@ -2,6 +2,7 @@ import math
 import numpy
 import commands2
 
+from commands.ramtest import RamTest
 import constants
 
 from subsystems.drivesubsystem import DriveSubsystem
@@ -11,6 +12,7 @@ from subsystems.shootersubsystem import ShooterSubsystem
 from subsystems.ampsubsystem import AmpSubsystem
 from subsystems.opticalsubsystem import OpticalSubsystem
 from subsystems.limesubsystem import LimeSubsystem
+from subsystems.sewsubsystem import SewSubsystem
 
 from commands2.button import CommandXboxController
 
@@ -29,6 +31,7 @@ class RobotContainer:
         self.intake = IntakeSubsystem()
         self.shooter = ShooterSubsystem()
         self.amp = AmpSubsystem()
+        self.sew = SewSubsystem()
 
         self.configureBindings()
 
@@ -82,6 +85,8 @@ class RobotContainer:
             self.shooter.setSpeed(speed))
 
     def getAutonomousCommand(self) -> Command:
+        return RamTest(self.drive, self.sew)
+
         return SequentialCommandGroup(
             self.shooter.setSpeed(1.0),
             self.feeder.setSpeed(1.0),

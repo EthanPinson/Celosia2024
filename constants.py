@@ -150,13 +150,13 @@ class OpticalConstants:
     POSE_STRATEGY = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR
     TAG_FIELD = AprilTagField.k2024Crescendo
 
-    SKEPTICISM: tuple[float, float, float] = (0.1, 0.1, 0.1)
+    SKEPTICISM: tuple[float, float, float] = (1, 1, 1) #(0.1, 0.1, 0.1)
 
     BLU_USB_NAME: str = "blueCamera"
     GRN_USB_NAME: str = "greenCamera"
 
 class LimeConstants:
-    SKEPTICISM: tuple[float, float, float] = (0.5, 0.5, 0.5)
+    SKEPTICISM: tuple[float, float, float] = (1, 1, 1) #(0.5, 0.5, 0.5)
     NAME: str = "limelight-bread"
     #IP: str = "10.99.72.31" uhhhh idk
 
@@ -166,3 +166,11 @@ class LimeConstants:
 class GyroConstants:
     BITRATE: int = 500000
     UPDATE_HZ: int = 60
+
+# roboRIO 2.0
+class RoboRioConstants:
+    IP: str = "10.99.72.2"
+    MDNS: str = "roboRIO-9972-FRC.local"
+
+    LOG_FLUSH_PERIOD: float = 0.25
+    LOG_NT: bool = True
