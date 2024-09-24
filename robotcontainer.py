@@ -14,6 +14,8 @@ from subsystems.opticalsubsystem import OpticalSubsystem
 from subsystems.limesubsystem import LimeSubsystem
 from subsystems.sewsubsystem import SewSubsystem
 
+from wpilib.cameraserver import CameraServer
+
 from commands2.button import CommandXboxController
 
 from commands2 import Command, SequentialCommandGroup, WaitCommand, ParallelCommandGroup
@@ -32,6 +34,8 @@ class RobotContainer:
         self.shooter = ShooterSubsystem()
         self.amp = AmpSubsystem()
         self.sew = SewSubsystem()
+
+        CameraServer.launch()
 
         self.configureBindings()
 
@@ -63,11 +67,11 @@ class RobotContainer:
             .onFalse(self.setAll(0.0))
 
         self.opsController.povDown() \
-            .onTrue(self.amp.setSpeed(-0.75)) \
+            .onTrue(self.amp.setSpeed(-0.1)) \
             .onFalse(self.amp.setSpeed(0.0))
 
         self.opsController.povUp() \
-            .onTrue(self.amp.setSpeed(0.75)) \
+            .onTrue(self.amp.setSpeed(0.33)) \
             .onFalse(self.amp.setSpeed(0.0))
 
         self.opsController.rightBumper() \
@@ -85,12 +89,13 @@ class RobotContainer:
             self.shooter.setSpeed(speed))
 
     def getAutonomousCommand(self) -> Command:
-        return RamTest(self.drive, self.sew)
+        RamTest(self.drive, self.sew)
 
         return SequentialCommandGroup(
             self.shooter.setSpeed(1.0),
             self.feeder.setSpeed(1.0),
-            WaitCommand(1), self.intake.setSpeed(0.5),
-            WaitCommand(1), self.setAll(0.0))
+            WaitCommand(6), self.intake.setSpeed(0.5),
+            WaitCommand(1), self.setAll(0.0),
+            RamTest(self.drive, self.sew), self.drive.stopIt())
 
     #def cleanup(self): self.lime.disconnect()
